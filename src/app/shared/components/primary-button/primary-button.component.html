@@ -1,0 +1,7 @@
+<button 
+      [type]="type" 
+      [class]="'btn ' + (fullWidth ? 'w-full ' : '') + (variant === 'secondary' ? 'btn-secondary' : 'btn-primary')"
+      [disabled]="loading || disabled">
+      <span class="spinner" *ngIf="loading"></span>
+      <span [class.invisible]="loading"><ng-content></ng-content></span>
+    </button>

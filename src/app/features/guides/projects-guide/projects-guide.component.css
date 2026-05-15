@@ -1,0 +1,20 @@
+.guide-page { max-width: 800px; margin: 0 auto; }
+    .back-link { display: inline-block; margin-bottom: 1.5rem; color: var(--text-muted); font-weight: 500; }
+    .guide-content { padding: 3rem; background: var(--surface); border-radius: 12px; border: 1px solid var(--border); }
+    h1 { margin-bottom: 0.5rem; font-size: 2rem; }
+    .subtitle { color: var(--text-muted); margin-bottom: 2.5rem; font-size: 1.125rem; }
+    .section { margin-bottom: 2.5rem; }
+    h2 { font-size: 1.25rem; margin-bottom: 1rem; color: var(--primary-blue); }
+    ul { list-style: disc; padding-left: 1.5rem; color: var(--text-muted); margin-bottom: 2rem;}
+    li { margin-bottom: 0.5rem; }
+    
+    .features-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .feature-card { border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; }
+    .feature-card h3 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .feature-card p { color: var(--text-muted); font-size: 0.875rem; margin: 0; }
+    
+    .workflow { list-style: decimal; padding-left: 1.5rem; color: var(--text-main); font-weight: 500; }
+    .workflow li { margin-bottom: 1rem; }
+    
+    .btn { padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 500; border: none; cursor: pointer; }
+    .btn-primary { background-color: var(--primary-blue); color: white; }

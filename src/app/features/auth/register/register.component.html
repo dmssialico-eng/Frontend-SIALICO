@@ -1,0 +1,93 @@
+<div class="auth-layout">
+  <div class="left-panel">
+    <div class="logo-container">
+      <app-sialico-logo></app-sialico-logo>
+    </div>
+    
+    <div class="auth-card">
+      <div class="card-header">
+        <h1>Hola, bienvenido</h1>
+        <p>Ingresa tus datos para registrarte en la plataforma.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <a routerLink="/login" class="tab">Iniciar sesión</a>
+        <a routerLink="/register" class="tab active">Crear cuenta</a>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" formControlName="full_name" placeholder="Tu nombre completo" />
+        </div>
+
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" formControlName="email" placeholder="empresa@correo.com" />
+        </div>
+
+        <div class="form-group">
+          <label>Empresa</label>
+          <input type="text" formControlName="company_name" placeholder="Nombre de tu empresa" />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group" style="flex:1; margin-right:1rem;">
+            <label>Tipo de industria</label>
+            <select formControlName="industry" class="form-select">
+              <option value="">Selecciona...</option>
+              <option value="Alimentos">Alimentos</option>
+              <option value="Cosméticos">Cosméticos</option>
+              <option value="Suplementos">Suplementos</option>
+            </select>
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label>Interés a exportar</label>
+            <select formControlName="export_interest" class="form-select">
+              <option value="">Selecciona...</option>
+              <option value="USA">Estados Unidos</option>
+              <option value="EU">Unión Europea</option>
+              <option value="CA">Canadá</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" formControlName="password" placeholder="••••••••" />
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+
+        <app-primary-button type="submit" [loading]="isLoading" [fullWidth]="true">
+          Registrarse
+        </app-primary-button>
+      </form>
+
+      <div class="auth-footer" style="margin-top: 1.5rem;">
+        ¿Ya tienes cuenta? <a routerLink="/login">Iniciar sesión</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="analytics-card">
+      <div class="analytics-header">
+        <h3>Exportaciones Seguras</h3>
+        <p>Tu aliado en cumplimiento regulatorio global.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-circle">
+          <span class="value">90%</span>
+          <span class="label">De exportaciones exitosas</span>
+        </div>
+        <div class="stat-circle">
+          <span class="value">90+</span>
+          <span class="label">De tasa de aprobación</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

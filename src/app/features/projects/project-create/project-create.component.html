@@ -1,0 +1,94 @@
+<div class="page-header">
+  <a routerLink="/projects" class="back-link">&larr; Volver a Proyectos</a>
+</div>
+
+<div class="create-project-card card">
+  <div class="card-header-center">
+    <h1>Crear nuevo proyecto</h1>
+    <p>Define la información básica y qué módulos quieres activar desde el inicio.</p>
+  </div>
+
+  <div class="form-grid">
+    <div class="left-section">
+      <h3>Datos del proyecto</h3>
+      
+      <form [formGroup]="projectForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label>Nombre del proyecto</label>
+          <input type="text" formControlName="name" placeholder="Ej. Registro de Etiqueta FDA">
+        </div>
+        
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea formControlName="description" rows="4" placeholder="Breve descripción de los objetivos del proyecto..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>Empresa asignada</label>
+          <input type="text" [value]="userCompanyName" readonly class="readonly-input">
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+
+        <div class="actions">
+          <app-primary-button variant="secondary" routerLink="/projects" type="button">Cancelar</app-primary-button>
+          <app-primary-button type="submit" [loading]="isSubmitting" [disabled]="projectForm.invalid">Crear proyecto</app-primary-button>
+        </div>
+      </form>
+    </div>
+
+    <div class="right-section">
+      <h3>Resumen de pasos</h3>
+      
+      <div class="steps-list">
+        <div class="step-item active">
+          <div class="step-number">1</div>
+          <span>Datos básicos</span>
+        </div>
+        <div class="step-item active">
+          <div class="step-number">2</div>
+          <span>Empresa</span>
+        </div>
+        <div class="step-item">
+          <div class="step-number">3</div>
+          <span>Módulos activos</span>
+        </div>
+      </div>
+
+      <h3 style="margin-top: 2rem;">Checklist inicial sugerido</h3>
+      
+      <div class="checklist-items">
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>Adquisición</strong>
+            <p>Carga de contratos, compras y recursos relacionados.</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>Notificaciones</strong>
+            <p>Recordatorios y alertas sobre fechas clave del proyecto.</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>Soporte</strong>
+            <p>Canal directo para dudas del equipo con el área de soporte.</p>
+          </div>
+        </div>
+        <div class="check-item">
+          <div class="check-icon">✓</div>
+          <div>
+            <strong>Guías</strong>
+            <p>Plantillas y pasos sugeridos para completar evidencias.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

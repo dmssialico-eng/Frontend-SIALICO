@@ -1,0 +1,94 @@
+<div class="dashboard-header">
+  <div class="greeting">
+    <h1>Hola, {{ user?.company_name || 'Usuario' }}</h1>
+    <p>Aquí tienes una vista rápida de tus proyectos y actividad reciente.</p>
+  </div>
+  <div class="header-actions">
+    <app-primary-button variant="secondary" routerLink="/subscription">
+      Ver planes y pagos
+    </app-primary-button>
+    <app-primary-button routerLink="/projects/new">
+      + Crear proyecto
+    </app-primary-button>
+  </div>
+</div>
+
+<div class="loading-state" *ngIf="isLoading">
+  <div class="spinner"></div>
+  <p>Cargando información del dashboard...</p>
+</div>
+
+<div class="dashboard-grid" *ngIf="!isLoading">
+  <div class="main-column">
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon bg-blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <div class="stat-info">
+          <h3>Proyectos activos</h3>
+          <span class="stat-value">{{ stats?.active_projects || 0 }} / {{ subscription?.plan?.project_limit || '∞' }}</span>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon bg-pink">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </div>
+        <div class="stat-info">
+          <h3>Tareas pendientes</h3>
+          <span class="stat-value">{{ stats?.pending_tasks || 0 }}</span>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon bg-green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+        </div>
+        <div class="stat-info">
+          <h3>Actividad reciente</h3>
+          <span class="stat-value">{{ notifications.length }} alertas</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card projects-card">
+      <div class="card-header">
+        <h2>Proyectos recientes</h2>
+        <a routerLink="/projects" class="view-all">Ver todos</a>
+      </div>
+      
+      <div class="empty-state" *ngIf="!stats?.recent_projects?.length">
+        <p>No tienes proyectos activos.</p>
+        <app-primary-button routerLink="/projects/new">Crear mi primer proyecto</app-primary-button>
+      </div>
+
+      <div class="project-list" *ngIf="stats?.recent_projects?.length">
+        <div class="project-item" *ngFor="let p of stats.recent_projects">
+          <div class="project-title">{{ p.name }}</div>
+          <div class="project-status badge" [ngClass]="p.status.toLowerCase()">{{ p.status }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-column">
+    <div class="card quick-access">
+      <h2>Accesos rápidos</h2>
+      <div class="access-links">
+        <a routerLink="/subscription" class="access-link">
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg></div>
+          <span>Ir a Suscripción</span>
+        </a>
+        <a routerLink="/guides" class="access-link">
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path></svg></div>
+          <span>Ver Guías</span>
+        </a>
+        <a routerLink="/profile" class="access-link">
+          <div class="icon-circle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+          <span>Abrir Perfil</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

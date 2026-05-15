@@ -1,0 +1,38 @@
+<div class="page-header">
+      <a routerLink="/projects" class="back-link">&larr; Volver a Proyectos</a>
+    </div>
+
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Cargando proyecto...</p>
+    </div>
+
+    <div *ngIf="project && !isLoading">
+      <div class="project-header card">
+        <div class="flex-between">
+          <div>
+            <h1>{{ project.name }}</h1>
+            <p>{{ project.description || 'Sin descripción' }}</p>
+          </div>
+          <span class="badge" [ngClass]="project.status.toLowerCase()">{{ project.status }}</span>
+        </div>
+      </div>
+
+      <div class="project-grid">
+        <div class="card">
+          <h2>Productos</h2>
+          <div class="empty-state">
+            <p>Aún no has agregado productos a este proyecto.</p>
+            <app-primary-button variant="secondary">Agregar producto</app-primary-button>
+          </div>
+        </div>
+        
+        <div class="card">
+          <h2>Etiquetas y Evidencias</h2>
+          <div class="empty-state">
+            <p>No hay documentos ni etiquetas cargadas.</p>
+            <app-primary-button variant="secondary">Subir evidencia</app-primary-button>
+          </div>
+        </div>
+      </div>
+    </div>

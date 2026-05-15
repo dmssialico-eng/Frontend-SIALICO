@@ -1,0 +1,75 @@
+<div class="auth-layout">
+  <div class="left-panel">
+    <div class="logo-container">
+      <app-sialico-logo></app-sialico-logo>
+    </div>
+    
+    <div class="auth-card">
+      <div class="card-header">
+        <h1>Hola, bienvenido de nuevo</h1>
+        <p>Ingresa con tu cuenta para ver tus proyectos y avances.</p>
+      </div>
+
+      <div class="auth-tabs">
+        <a routerLink="/login" class="tab active">Iniciar sesión</a>
+        <a routerLink="/register" class="tab">Crear cuenta</a>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" formControlName="email" placeholder="empresa@correo.com" />
+        </div>
+
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" formControlName="password" placeholder="••••••••" />
+        </div>
+
+        <div *ngIf="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
+
+        <app-primary-button type="submit" [loading]="isLoading" [fullWidth]="true">
+          Iniciar sesión
+        </app-primary-button>
+      </form>
+
+      <div class="divider">
+        <span>O continuar con</span>
+      </div>
+
+      <div class="social-buttons">
+        <button type="button" class="social-btn">
+          Continuar con Google
+        </button>
+        <button type="button" class="social-btn">
+          Continuar con Apple
+        </button>
+      </div>
+
+      <div class="auth-footer">
+        ¿Aún no tienes cuenta? <a routerLink="/register">Crear cuenta nueva</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="analytics-card">
+      <div class="analytics-header">
+        <h3>Exportaciones Seguras</h3>
+        <p>Tu aliado en cumplimiento regulatorio global.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-circle">
+          <span class="value">90%</span>
+          <span class="label">De exportaciones exitosas</span>
+        </div>
+        <div class="stat-circle">
+          <span class="value">90+</span>
+          <span class="label">De tasa de aprobación</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

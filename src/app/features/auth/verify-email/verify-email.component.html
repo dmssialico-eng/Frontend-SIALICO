@@ -1,0 +1,24 @@
+<div class="auth-layout" style="justify-content: center; align-items: center;">
+      <div class="auth-card" style="width: 100%; max-width: 400px; text-align: center;">
+        <div class="logo-container" style="display:flex; justify-content:center;">
+          <app-sialico-logo></app-sialico-logo>
+        </div>
+        <h2 style="margin: 1.5rem 0 0.5rem; font-size: 1.25rem;">Verifica tu correo electrónico</h2>
+        <p style="color: var(--text-muted); font-size: 0.875rem; margin-bottom: 2rem;">
+          Hemos enviado un código de 6 dígitos a tu correo.
+        </p>
+
+        <div class="form-group" style="text-align: left;">
+          <label>Código de verificación</label>
+          <input type="text" placeholder="000000" style="text-align:center; letter-spacing:0.5em; font-size:1.25rem;"/>
+        </div>
+
+        <app-primary-button [fullWidth]="true" (click)="confirm()">
+          Confirmar código
+        </app-primary-button>
+
+        <div class="auth-footer" style="margin-top: 1.5rem;">
+          ¿No recibiste el código? <a href="javascript:void(0)">Reenviar código</a>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,79 @@
+<div class="page-header">
+  <h1>Notificaciones</h1>
+</div>
+
+<div class="notifications-tabs">
+  <button class="tab active">Todas</button>
+  <button class="tab">Proyectos</button>
+  <button class="tab">Regulatorio</button>
+  <button class="tab">Capacitación</button>
+  <button class="tab">Facturación</button>
+</div>
+
+<div class="actions-bar">
+  <button class="btn-text" (click)="markAllAsRead()">Marcar todas como leídas</button>
+</div>
+
+<div *ngIf="isLoading" class="loading-state">
+  <div class="spinner"></div>
+  <p>Cargando notificaciones...</p>
+</div>
+
+<div *ngIf="!isLoading" class="notifications-list">
+  
+  <div class="empty-state" *ngIf="notifications.length === 0">
+    <p>No tienes notificaciones pendientes.</p>
+  </div>
+
+  <div class="notification-item" *ngFor="let notif of notifications" [class.unread]="!notif.is_read" (click)="markAsRead(notif.id)">
+    <div class="notif-icon" [ngClass]="notif.notification_type.toLowerCase()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <!-- Generic icon -->
+        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+      </svg>
+    </div>
+    <div class="notif-content">
+      <p>{{ notif.message }}</p>
+      <span class="notif-date">{{ notif.created_at | date:'short' }}</span>
+    </div>
+    <div class="unread-dot" *ngIf="!notif.is_read"></div>
+  </div>
+
+  <!-- Fallback seed content if empty -->
+  <div *ngIf="notifications.length > 0 && notifications.length < 2" class="seed-content">
+    <h3 class="group-title mt-8">Hoy</h3>
+    <div class="notification-item unread">
+      <div class="notif-icon regulatorio">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <div class="notif-content">
+        <p>FDA aprobó el borrador de etiquetado para tu proyecto de lácteos</p>
+        <span class="notif-date">Hace 2 horas</span>
+      </div>
+      <div class="unread-dot"></div>
+    </div>
+    
+    <div class="notification-item">
+      <div class="notif-icon proyectos">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      </div>
+      <div class="notif-content">
+        <p>Recordatorio: auditoría interna NOM-051 en planta de snacks</p>
+        <span class="notif-date">Hace 5 horas</span>
+      </div>
+    </div>
+
+    <h3 class="group-title mt-8">Esta semana</h3>
+    <div class="notification-item">
+      <div class="notif-icon capacitacion">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      </div>
+      <div class="notif-content">
+        <p>Tu curso “Etiquetado FDA para exportación” inicia mañana</p>
+        <span class="notif-date">Lunes</span>
+      </div>
+    </div>
+  </div>
+
+</div>

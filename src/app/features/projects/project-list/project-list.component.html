@@ -1,0 +1,63 @@
+<div class="page-header">
+  <div class="header-content">
+    <div>
+      <h1>Proyectos de cumplimiento e inocuidad</h1>
+      <p>Da seguimiento a tus proyectos en FDA, NOM y normas HACCP desde una sola vista.</p>
+    </div>
+    <app-primary-button routerLink="/projects/new">+ Crear</app-primary-button>
+  </div>
+</div>
+
+<div class="card projects-table-card">
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando proyectos...</p>
+  </div>
+
+  <table class="projects-table" *ngIf="!isLoading">
+    <thead>
+      <tr>
+        <th>Proyecto</th>
+        <th>Avance</th>
+        <th>Próxima entrega</th>
+        <th>Responsable</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngIf="projects.length === 0">
+        <td colspan="5" class="empty-cell">No hay proyectos activos. <a routerLink="/projects/new">Crear el primero</a></td>
+      </tr>
+      <tr *ngFor="let p of projects">
+        <td>
+          <div class="project-name">
+            {{ p.name }}
+            <span class="warning-icon" *ngIf="p.status === 'PAUSED'">⚠️</span>
+          </div>
+        </td>
+        <td>
+          <span class="badge" [ngClass]="p.status.toLowerCase()">{{ p.status }}</span>
+        </td>
+        <td>{{ p.updated_at | date }}</td>
+        <td>{{ 'Tú' }}</td>
+        <td>
+          <a [routerLink]="['/projects', p.id]" class="btn-text">Ver detalle</a>
+        </td>
+      </tr>
+      
+      <!-- Seed-compatible fallback examples if needed -->
+      <tr *ngIf="projects.length > 0 && projects.length < 4">
+        <td>
+          <div class="project-name">
+            Etiquetado FDA para línea de lácteos
+            <span class="warning-icon">⚠️</span>
+          </div>
+        </td>
+        <td><span class="text-sm">Revisar 4 textos legales</span></td>
+        <td>20 Ene 2026</td>
+        <td>Ricardo C.</td>
+        <td><a href="javascript:void(0)" class="btn-text">Ver detalle</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>

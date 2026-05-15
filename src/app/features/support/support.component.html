@@ -1,0 +1,35 @@
+<div class="page-header">
+  <h1>Soporte</h1>
+  <p>Hola, ¿tienes alguna duda? Habla con nuestro chatbot.</p>
+</div>
+
+<div class="support-grid">
+  <div class="card chat-card">
+    <div class="chat-messages">
+      <div class="message-row" *ngFor="let msg of chatMessages" [ngClass]="{'bot': msg.isBot, 'user': !msg.isBot}">
+        <div class="avatar" *ngIf="msg.isBot">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </div>
+        <div class="message-bubble">{{ msg.text }}</div>
+      </div>
+    </div>
+    
+    <div class="chat-input-area">
+      <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Escribe aquí" [disabled]="isSending">
+      <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim() || isSending">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="side-content">
+    <div class="card call-card">
+      <div class="icon-circle bg-blue mb-4">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+      </div>
+      <h3>Llama a uno de nuestros agentes</h3>
+      <p>Si tu problema es urgente, comunícate directamente con nuestro equipo de atención.</p>
+      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4">Llamar</app-primary-button>
+    </div>
+  </div>
+</div>

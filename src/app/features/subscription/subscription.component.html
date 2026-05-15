@@ -1,0 +1,71 @@
+<div class="page-header">
+  <h1>Suscripción</h1>
+  <p>Gestiona tu plan, facturación y límites.</p>
+</div>
+
+<div *ngIf="isLoading" class="loading-state">
+  <div class="spinner"></div>
+  <p>Cargando información...</p>
+</div>
+
+<div *ngIf="!isLoading">
+  <div class="current-plan-section">
+    <div class="card plan-details-card">
+      <div class="card-content">
+        <h3>Plan actual - {{ currentSubscription?.plan?.name || 'Ninguno' }}</h3>
+        <p class="renewal-date" *ngIf="currentSubscription?.end_date">Renueva: {{ currentSubscription?.end_date | date }}</p>
+        
+        <ul class="plan-features mt-4">
+          <li>Hasta {{ currentSubscription?.plan?.project_limit || '∞' }} proyectos activos</li>
+          <li>Usuarios ilimitados</li>
+          <li>Soporte prioritario</li>
+          <li>Espacios de almacenamiento extendido</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="card price-card">
+      <div class="price-info">
+        <span class="currency">$</span>
+        <span class="amount">{{ currentSubscription?.plan?.price || '0' }}</span>
+      </div>
+      <p class="billing-period">USD / año<br>IVA incluido</p>
+      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4">Ver facturación</app-primary-button>
+    </div>
+
+    <div class="card payment-status-card">
+      <h3>Estado de pago</h3>
+      <div class="status-item mt-4">
+        <span class="label">Último pago</span>
+        <span class="value">Aprobado</span>
+      </div>
+      <div class="status-item">
+        <span class="label">Próximo pago</span>
+        <span class="value">{{ currentSubscription?.end_date | date }}</span>
+      </div>
+      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4">Actualizar método</app-primary-button>
+    </div>
+  </div>
+
+  <h2 class="section-title mt-8">Cambiar de plan</h2>
+  
+  <div class="plans-grid">
+    <div class="plan-card" *ngFor="let plan of plans" [class.highlighted]="plan.name.toLowerCase().includes('pro')">
+      <div class="recommended-badge" *ngIf="plan.name.toLowerCase().includes('pro')">Recomendado</div>
+      <h3>{{ plan.name }}</h3>
+      <div class="price">${{ plan.price || '0' }} <span>/ año</span></div>
+      
+      <ul class="features">
+        <li>{{ plan.project_limit ? 'Hasta ' + plan.project_limit + ' proyectos' : 'Proyectos ilimitados' }}</li>
+        <li>Usuarios ilimitados</li>
+        <li>Soporte {{ plan.name.toLowerCase().includes('enterprise') ? 'dedicado' : 'prioritario' }}</li>
+      </ul>
+      
+      <app-primary-button 
+        [fullWidth]="true" 
+        [variant]="plan.name.toLowerCase().includes('pro') ? 'primary' : 'secondary'">
+        {{ plan.name.toLowerCase().includes('enterprise') ? 'Contactar asesor' : (currentSubscription?.plan?.id === plan.id ? 'Plan Actual' : 'Seleccionar') }}
+      </app-primary-button>
+    </div>
+  </div>
+</div>
