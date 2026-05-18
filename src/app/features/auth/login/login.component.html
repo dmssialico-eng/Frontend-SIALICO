@@ -1,75 +1,142 @@
 <div class="auth-layout">
+
+  <!-- Panel izquierdo: formulario -->
   <div class="left-panel">
+
     <div class="logo-container">
       <app-sialico-logo></app-sialico-logo>
     </div>
-    
+
     <div class="auth-card">
       <div class="card-header">
-        <h1>Hola, bienvenido de nuevo</h1>
+        <h1>Bienvenido de nuevo</h1>
         <p>Ingresa con tu cuenta para ver tus proyectos y avances.</p>
       </div>
 
       <div class="auth-tabs">
-        <a routerLink="/login" class="tab active">Iniciar sesión</a>
+        <a routerLink="/login"    class="tab active">Iniciar sesión</a>
         <a routerLink="/register" class="tab">Crear cuenta</a>
       </div>
 
+      <!-- Credenciales de desarrollo visibles -->
+      <div class="dev-hint">
+        <div class="dev-hint__header">
+          <i-lucide name="info" [size]="14"></i-lucide>
+          Modo desarrollo — credenciales de prueba
+        </div>
+        <div class="dev-hint__creds">
+          <div class="cred-row">
+            <span class="cred-role">Usuario</span>
+            <code>usuario&#64;empresa.com</code>
+            <code>user123</code>
+          </div>
+          <div class="cred-row">
+            <span class="cred-role admin">Admin</span>
+            <code>admin&#64;sialico.com</code>
+            <code>admin123</code>
+          </div>
+        </div>
+      </div>
+
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+
         <div class="form-group">
           <label>Correo electrónico</label>
-          <input type="email" formControlName="email" placeholder="empresa@correo.com" />
+          <div class="input-wrapper">
+            <i-lucide name="mail" [size]="16" class="input-icon"></i-lucide>
+            <input
+              type="email"
+              formControlName="email"
+              placeholder="empresa@correo.com"
+              autocomplete="email" />
+          </div>
         </div>
 
         <div class="form-group">
           <label>Contraseña</label>
-          <input type="password" formControlName="password" placeholder="••••••••" />
+          <div class="input-wrapper">
+            <i-lucide name="lock" [size]="16" class="input-icon"></i-lucide>
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              placeholder="••••••••"
+              autocomplete="current-password" />
+            <button type="button" class="toggle-pw" (click)="showPassword = !showPassword">
+              <i-lucide [name]="showPassword ? 'eye-off' : 'eye'" [size]="16"></i-lucide>
+            </button>
+          </div>
         </div>
 
-        <div *ngIf="errorMessage" class="error-message">
+        <div class="error-message" *ngIf="errorMessage">
+          <i-lucide name="alert-circle" [size]="14"></i-lucide>
           {{ errorMessage }}
         </div>
 
         <app-primary-button type="submit" [loading]="isLoading" [fullWidth]="true">
           Iniciar sesión
         </app-primary-button>
+
       </form>
-
-      <div class="divider">
-        <span>O continuar con</span>
-      </div>
-
-      <div class="social-buttons">
-        <button type="button" class="social-btn">
-          Continuar con Google
-        </button>
-        <button type="button" class="social-btn">
-          Continuar con Apple
-        </button>
-      </div>
 
       <div class="auth-footer">
         ¿Aún no tienes cuenta? <a routerLink="/register">Crear cuenta nueva</a>
       </div>
     </div>
+
   </div>
 
+  <!-- Panel derecho: ilustración -->
   <div class="right-panel">
-    <div class="analytics-card">
-      <div class="analytics-header">
-        <h3>Exportaciones Seguras</h3>
-        <p>Tu aliado en cumplimiento regulatorio global.</p>
+    <div class="right-content">
+
+      <div class="right-badge">
+        <i-lucide name="shield-check" [size]="18"></i-lucide>
+        Plataforma regulatoria certificada
       </div>
-      <div class="stats-grid">
-        <div class="stat-circle">
-          <span class="value">90%</span>
-          <span class="label">De exportaciones exitosas</span>
+
+      <h2>Exporta con confianza a cualquier mercado del mundo</h2>
+      <p>Sialico centraliza tus procesos de cumplimiento normativo: FDA, FSVP, COFEPRIS, HACCP y más.</p>
+
+      <div class="stats-row">
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i-lucide name="check-circle-2" [size]="20"></i-lucide>
+          </div>
+          <div>
+            <span class="stat-value">90%</span>
+            <span class="stat-label">Tasa de aprobación</span>
+          </div>
         </div>
-        <div class="stat-circle">
-          <span class="value">90+</span>
-          <span class="label">De tasa de aprobación</span>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i-lucide name="globe-2" [size]="20"></i-lucide>
+          </div>
+          <div>
+            <span class="stat-value">40+</span>
+            <span class="stat-label">Países cubiertos</span>
+          </div>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-item">
+          <div class="stat-icon">
+            <i-lucide name="zap" [size]="20"></i-lucide>
+          </div>
+          <div>
+            <span class="stat-value">3x</span>
+            <span class="stat-label">Más rápido que manual</span>
+          </div>
         </div>
       </div>
+
+      <div class="features-list">
+        <div class="feature-item" *ngFor="let f of features">
+          <i-lucide name="check" [size]="14"></i-lucide>
+          {{ f }}
+        </div>
+      </div>
+
     </div>
   </div>
+
 </div>

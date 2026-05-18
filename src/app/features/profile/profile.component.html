@@ -4,60 +4,78 @@
 </div>
 
 <div class="profile-grid" *ngIf="user">
+
   <div class="card profile-card">
     <h2>Datos Personales</h2>
-    
+
     <div class="avatar-section">
-      <div class="avatar-large">{{ user.full_name?.charAt(0) || 'U' }}</div>
-      <button class="btn-text">Cambiar foto</button>
+      <div class="avatar-large">{{ user.full_name.charAt(0) || 'U' }}</div>
     </div>
 
-    <div class="form-group">
-      <label>Nombre completo</label>
-      <input type="text" [value]="user.full_name" readonly class="readonly-input">
-    </div>
+    <form [formGroup]="profileForm" (ngSubmit)="saveChanges()">
 
-    <div class="form-group">
-      <label>Correo electrónico</label>
-      <input type="text" [value]="user.email" readonly class="readonly-input">
-    </div>
+      <div class="form-group">
+        <label>Nombre completo</label>
+        <input type="text" formControlName="full_name" placeholder="Tu nombre completo">
+      </div>
 
-    <app-primary-button class="mt-4">Guardar cambios</app-primary-button>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="text" [value]="user.email" readonly class="readonly-input">
+        <small class="field-hint">El correo no puede modificarse.</small>
+      </div>
+
+      <div class="form-group">
+        <label>Empresa</label>
+        <input type="text" formControlName="company_name" placeholder="Nombre de tu empresa">
+      </div>
+
+      <div class="form-group">
+        <label>Teléfono</label>
+        <input type="tel" formControlName="phone" placeholder="+52 222 000 0000">
+      </div>
+
+      <div class="feedback-message success" *ngIf="successMessage">{{ successMessage }}</div>
+      <div class="feedback-message error"   *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <app-primary-button
+        type="submit"
+        [loading]="isSaving"
+        [disabled]="profileForm.invalid"
+        class="mt-4">
+        Guardar cambios
+      </app-primary-button>
+
+    </form>
   </div>
 
   <div class="card companies-card">
     <div class="card-header-flex">
-      <h2>Empresas</h2>
-      <app-primary-button variant="secondary">+ Crear nueva empresa</app-primary-button>
+      <h2>Empresa activa</h2>
     </div>
 
     <div class="company-list">
       <div class="company-item active">
         <div class="company-info">
-          <h3>{{ user.company_name }}</h3>
-          <p>Alimentos • 3 proyectos activos</p>
+          <h3>{{ user.company_name || 'Mi Empresa' }}</h3>
+          <p>Rol: {{ user.role }}</p>
         </div>
         <div class="company-action">
           <span class="badge active">Empresa activa</span>
-        </div>
-      </div>
-
-      <div class="company-item">
-        <div class="company-info">
-          <h3>EcoLogistics MX</h3>
-          <p>Logística • 1 proyecto</p>
-        </div>
-        <div class="company-action">
-          <app-primary-button variant="secondary">Activar</app-primary-button>
         </div>
       </div>
     </div>
 
     <div class="logout-section mt-8">
       <button class="logout-btn" (click)="logout()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+          <polyline points="16 17 21 12 16 7"></polyline>
+          <line x1="21" y1="12" x2="9" y2="12"></line>
+        </svg>
         Cerrar sesión
       </button>
     </div>
   </div>
+
 </div>

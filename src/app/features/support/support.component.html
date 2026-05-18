@@ -1,35 +1,134 @@
-<div class="page-header">
-  <h1>Soporte</h1>
-  <p>Hola, ¿tienes alguna duda? Habla con nuestro chatbot.</p>
-</div>
+<!-- ══ LISTA DE TICKETS ══ -->
+<ng-container *ngIf="view === 'list'">
 
-<div class="support-grid">
-  <div class="card chat-card">
-    <div class="chat-messages">
-      <div class="message-row" *ngFor="let msg of chatMessages" [ngClass]="{'bot': msg.isBot, 'user': !msg.isBot}">
-        <div class="avatar" *ngIf="msg.isBot">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        </div>
-        <div class="message-bubble">{{ msg.text }}</div>
-      </div>
+  <div class="page-header">
+    <div>
+      <h1>Soporte</h1>
+      <p>Consulta tus tickets o abre uno nuevo.</p>
     </div>
-    
-    <div class="chat-input-area">
-      <input type="text" [(ngModel)]="newMessage" (keyup.enter)="sendMessage()" placeholder="Escribe aquí" [disabled]="isSending">
-      <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim() || isSending">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
+    <button class="btn-primary" (click)="view = 'new'">+ Nuevo ticket</button>
+  </div>
+
+  <div *ngIf="isLoadingTickets" class="loading-state"><div class="spinner"></div></div>
+
+  <div *ngIf="!isLoadingTickets">
+
+    <div class="empty-state" *ngIf="tickets.length === 0">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <p>Aún no tienes tickets de soporte.</p>
+      <button class="btn-primary" (click)="view = 'new'">Crear mi primer ticket</button>
+    </div>
+
+    <div class="card" *ngIf="tickets.length > 0">
+      <table class="tickets-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Asunto</th>
+            <th>Prioridad</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ticket of tickets" (click)="openTicket(ticket)" class="clickable-row">
+            <td class="id-cell">#{{ ticket.id }}</td>
+            <td class="subject-cell">{{ ticket.subject }}</td>
+            <td>
+              <span class="priority-badge" [ngClass]="'priority-' + ticket.priority.toLowerCase()">
+                {{ ticket.priority }}
+              </span>
+            </td>
+            <td><app-status-badge [status]="ticket.status" type="ticket"></app-status-badge></td>
+            <td class="date-cell">{{ ticket.created_at | date:'d MMM yyyy' }}</td>
+            <td class="arrow-cell">→</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</ng-container>
+
+
+<!-- ══ NUEVO TICKET ══ -->
+<ng-container *ngIf="view === 'new'">
+
+  <div class="page-header">
+    <button class="back-link" (click)="view = 'list'">← Volver</button>
+  </div>
+
+  <div class="card form-card">
+    <h2>Nuevo ticket de soporte</h2>
+    <p class="form-subtitle">Cuéntanos tu problema y un agente de Sialico te responderá pronto.</p>
+
+    <form [formGroup]="newTicketForm" (ngSubmit)="createTicket()">
+
+      <div class="form-group">
+        <label>Asunto *</label>
+        <input type="text" formControlName="subject" placeholder="Describe brevemente tu problema">
+      </div>
+
+      <div class="form-group">
+        <label>Descripción detallada *</label>
+        <textarea formControlName="description" rows="5"
+          placeholder="Explica con detalle el problema, los pasos para reproducirlo o tu pregunta...">
+        </textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Prioridad</label>
+        <select formControlName="priority">
+          <option value="LOW">Baja — tengo tiempo</option>
+          <option value="MEDIUM">Media — necesito ayuda pronto</option>
+          <option value="HIGH">Alta — está afectando mi trabajo</option>
+        </select>
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn-secondary" (click)="view = 'list'">Cancelar</button>
+        <app-primary-button type="submit" [loading]="isCreating" [disabled]="newTicketForm.invalid">
+          Enviar ticket
+        </app-primary-button>
+      </div>
+
+    </form>
+  </div>
+
+</ng-container>
+
+
+<!-- ══ DETALLE / HILO ══ -->
+<ng-container *ngIf="view === 'detail' && selectedTicket">
+
+  <div class="page-header">
+    <button class="back-link" (click)="goToList()">← Volver a tickets</button>
+  </div>
+
+  <div class="ticket-meta card">
+    <div class="meta-left">
+      <span class="ticket-id">#{{ selectedTicket.id }}</span>
+      <h2>{{ selectedTicket.subject }}</h2>
+      <p class="ticket-desc">{{ selectedTicket.description }}</p>
+    </div>
+    <div class="meta-right">
+      <app-status-badge [status]="selectedTicket.status" type="ticket"></app-status-badge>
+      <span class="ticket-date">{{ selectedTicket.created_at | date:'d MMM yyyy' }}</span>
     </div>
   </div>
 
-  <div class="side-content">
-    <div class="card call-card">
-      <div class="icon-circle bg-blue mb-4">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-      </div>
-      <h3>Llama a uno de nuestros agentes</h3>
-      <p>Si tu problema es urgente, comunícate directamente con nuestro equipo de atención.</p>
-      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4">Llamar</app-primary-button>
-    </div>
+  <div class="card thread-card">
+    <div *ngIf="isLoadingMessages" class="loading-state"><div class="spinner"></div></div>
+    <app-ticket-thread
+      *ngIf="!isLoadingMessages"
+      [messages]="messages"
+      [isSending]="isSending"
+      [currentUserId]="currentUserId"
+      (send)="sendMessage($event)">
+    </app-ticket-thread>
   </div>
-</div>
+
+</ng-container>

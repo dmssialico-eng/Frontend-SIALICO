@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { LucideAngularModule, Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck, CheckCircle2, Globe2, Zap, Check, Info } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 import { SialicoLogoComponent } from '../../../shared/components/sialico-logo/sialico-logo.component';
 import { PrimaryButtonComponent } from '../../../shared/components/primary-button/primary-button.component';
@@ -9,14 +10,41 @@ import { PrimaryButtonComponent } from '../../../shared/components/primary-butto
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SialicoLogoComponent, PrimaryButtonComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RouterLink,
+    LucideAngularModule,
+    SialicoLogoComponent,
+    PrimaryButtonComponent,
+  ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
-  isLoading = false;
+  isLoading    = false;
   errorMessage = '';
+  showPassword = false;
+
+  features = [
+    'Gestión de etiquetas FDA y COFEPRIS',
+    'Revisión profesional por especialistas',
+    'Seguimiento de proyectos en tiempo real',
+    'Notificaciones automáticas de cambios',
+  ];
+
+  readonly Mail         = Mail;
+  readonly Lock         = Lock;
+  readonly Eye          = Eye;
+  readonly EyeOff       = EyeOff;
+  readonly AlertCircle  = AlertCircle;
+  readonly ShieldCheck  = ShieldCheck;
+  readonly CheckCircle2 = CheckCircle2;
+  readonly Globe2       = Globe2;
+  readonly Zap          = Zap;
+  readonly Check        = Check;
+  readonly Info         = Info;
 
   constructor(
     private fb: FormBuilder,
@@ -24,23 +52,27 @@ export class LoginComponent {
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required]
+      email:    ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
     });
   }
 
   onSubmit() {
     if (this.loginForm.invalid) return;
-
-    this.isLoading = true;
+    this.isLoading    = true;
     this.errorMessage = '';
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        this.router.navigate(['/dashboard']);
+        const user = this.authService.getCurrentUser();
+        if (user?.role === 'admin') {
+          this.router.navigate(['/admin/dashboard']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
-      error: (err) => {
-        this.errorMessage = 'Credenciales inválidas. Por favor, intenta de nuevo.';
+      error: () => {
+        this.errorMessage = 'Credenciales inválidas. Intenta de nuevo.';
         this.isLoading = false;
       }
     });

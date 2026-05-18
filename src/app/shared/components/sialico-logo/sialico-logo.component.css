@@ -1,17 +1,10 @@
 .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--primary-blue);
-    }
-    .logo-icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo-text {
-      font-size: 1.25rem;
-      font-weight: 700;
-      letter-spacing: -0.025em;
-      color: var(--text-main);
-    }
+  display: flex;
+  align-items: center;
+}
+
+.logo-img {
+  height: 140px;
+  width: auto;
+  object-fit: contain;
+}

@@ -2,7 +2,7 @@ export interface User {
   id: number;
   email: string;
   full_name: string;
-  role: string;
+  role: 'admin' | 'user' | string;
   company_name: string;
   phone: string;
   is_active?: boolean;
@@ -85,8 +85,8 @@ export interface Ticket {
   id: number;
   subject: string;
   description: string;
-  status: string;
-  priority: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'closed' | string;
+  priority: 'low' | 'medium' | 'high' | string;
   created_at: string;
   updated_at: string;
 }
@@ -95,6 +95,8 @@ export interface TicketMessage {
   id: number;
   ticket: number;
   sender: number;
+  sender_name?: string;
+  is_admin?: boolean;
   message: string;
   created_at: string;
 }
@@ -107,4 +109,48 @@ export interface DashboardStats {
   total_projects: number;
   pending_tasks: number;
   recent_projects: Project[];
+}
+
+
+export type LabelStatus =
+  | 'draft'
+  | 'submitted'
+  | 'in_review'
+  | 'approved'
+  | 'needs_changes';
+
+export interface Label {
+  id: number;
+  product: number;
+  product_name?: string;
+  version: number;
+  file_url: string;
+  file_type: 'pdf' | 'png' | 'jpg' | 'jpeg' | 'scan';
+  status: LabelStatus;
+  submitted_at: string;
+  reviewed_at?: string | null;
+  feedback?: string | null;
+  feedback_file_url?: string | null;
+  reviewer?: number | null;
+  reviewer_name?: string | null;
+}
+
+export interface LabelReviewPayload {
+  status: 'approved' | 'needs_changes';
+  feedback: string;
+}
+
+
+export interface AdminDashboardStats {
+  pending_labels: number;
+  open_tickets: number;
+  total_users: number;
+  active_users: number;
+  pending_purchases: number;
+  labels_reviewed_this_month: number;
+}
+
+export interface AdminUser extends User {
+  subscription?: Subscription;
+  created_at?: string;
 }
