@@ -1,0 +1,38 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { AdminSidebarComponent } from '../../shared/components/admin-sidebar/admin-sidebar.component';
+
+@Component({
+  selector: 'app-admin-layout',
+  standalone: true,
+  imports: [CommonModule, RouterModule, AdminSidebarComponent],
+  template: `
+    <div class="admin-layout">
+      <app-admin-sidebar class="sidebar"></app-admin-sidebar>
+      <div class="admin-content">
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  `,
+  styles: [`
+    .admin-layout {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--page-bg);
+    }
+    .sidebar {
+      width: 250px;
+      flex-shrink: 0;
+      background-color: var(--surface);
+      border-right: 1px solid var(--border);
+    }
+    .admin-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 2rem;
+    }
+  `]
+})
+export class AdminLayoutComponent {}

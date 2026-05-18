@@ -1,0 +1,39 @@
+<div class="thread-container">
+
+  <div class="messages-area">
+    <div *ngIf="messages.length === 0" class="empty-thread">
+      <p>Sin mensajes aún. Sé el primero en escribir.</p>
+    </div>
+
+    <div
+      *ngFor="let msg of messages"
+      class="message-row"
+      [class.own]="isOwnMessage(msg)"
+      [class.other]="!isOwnMessage(msg)">
+
+      <div class="bubble">
+        <span class="sender-name" *ngIf="!isOwnMessage(msg)">
+          {{ msg.sender_name || (msg.is_admin ? 'Sialico' : 'Usuario') }}
+        </span>
+        <p>{{ msg.message }}</p>
+        <span class="msg-date">{{ msg.created_at | date:'d MMM, HH:mm' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <textarea
+      [(ngModel)]="newMessage"
+      placeholder="Escribe tu mensaje..."
+      rows="2"
+      (keydown.enter)="$event.preventDefault(); sendMessage()">
+    </textarea>
+    <button class="send-btn" (click)="sendMessage()" [disabled]="!newMessage.trim() || isSending">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </button>
+  </div>
+
+</div>
