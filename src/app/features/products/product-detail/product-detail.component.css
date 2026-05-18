@@ -1,0 +1,58 @@
+.back-link { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; display: inline-block; }
+.back-link:hover { color: var(--primary-blue); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+
+.product-header h1 { font-size: 1.4rem; font-weight: 700; }
+.muted { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem; }
+
+.btn-primary-link {
+  padding: 0.6rem 1.2rem;
+  background: var(--primary-blue);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-primary-link:hover { background: var(--primary-blue-dark); }
+
+.section-title { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.section-title h2 { font-size: 1rem; font-weight: 600; }
+.count { font-size: 0.8rem; color: var(--text-muted); background: var(--soft-bg); padding: 0.2rem 0.6rem; border-radius: 99px; }
+
+.labels-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 0;
+}
+
+.label-left { display: flex; align-items: center; gap: 0.75rem; }
+.label-icon {
+  width: 40px; height: 40px; border-radius: 8px;
+  background: var(--soft-bg); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon-pdf   { background: rgba(239,68,68,0.1);  color: #ef4444; }
+.icon-png,
+.icon-jpg,
+.icon-jpeg  { background: rgba(20,99,255,0.08); color: var(--primary-blue); }
+
+.label-version { display: block; font-weight: 600; font-size: 0.9rem; }
+.label-date    { display: block; font-size: 0.75rem; color: var(--text-muted); }
+
+.label-right { display: flex; align-items: center; gap: 1rem; }
+.reviewed-date { font-size: 0.75rem; color: var(--text-muted); }
+.btn-link { color: var(--primary-blue); font-size: 0.875rem; font-weight: 500; }
+
+.loading-state { display: flex; flex-direction: column; align-items: center; padding: 4rem; color: var(--text-muted); gap: 0.75rem; }
+.spinner { width: 1.75rem; height: 1.75rem; border: 3px solid var(--border); border-top-color: var(--primary-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

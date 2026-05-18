@@ -1,0 +1,70 @@
+<div class="page-header">
+  <a [routerLink]="['/projects', projectId]" class="back-link">← Volver al proyecto</a>
+</div>
+
+<div *ngIf="isLoading" class="loading-state">
+  <div class="spinner"></div>
+  <p>Cargando etiquetas...</p>
+</div>
+
+<ng-container *ngIf="!isLoading">
+
+  <div class="product-header card">
+    <div class="flex-between">
+      <div>
+        <h1>{{ product?.name || 'Producto' }}</h1>
+        <p class="muted">{{ product?.description || 'Sin descripción' }}</p>
+      </div>
+      <a [routerLink]="uploadRoute" class="btn-primary-link">
+        + Subir etiqueta
+      </a>
+    </div>
+  </div>
+
+  <div class="section-title">
+    <h2>Versiones de etiqueta</h2>
+    <span class="count">{{ labels.length }} versiones</span>
+  </div>
+
+  <app-empty-state
+    *ngIf="labels.length === 0"
+    message="Aún no has subido etiquetas para este producto."
+    ctaText="Subir primera etiqueta"
+    [ctaRoute]="uploadRoute">
+  </app-empty-state>
+
+  <div class="labels-list" *ngIf="labels.length > 0">
+    <div class="label-row card" *ngFor="let label of labels">
+
+      <div class="label-left">
+        <div class="label-icon" [ngClass]="'icon-' + label.file_type">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+          </svg>
+        </div>
+        <div>
+          <span class="label-version">Versión {{ label.version }}</span>
+          <span class="label-date">Enviada {{ label.submitted_at | date:'d MMM yyyy' }}</span>
+        </div>
+      </div>
+
+      <div class="label-center">
+        <app-status-badge [status]="label.status" type="label"></app-status-badge>
+      </div>
+
+      <div class="label-right">
+        <span class="reviewed-date" *ngIf="label.reviewed_at">
+          Revisada {{ label.reviewed_at | date:'d MMM' }}
+        </span>
+        <a
+          [routerLink]="['/projects', projectId, 'products', product?.id, 'labels', label.id]"
+          class="btn-link">
+          Ver detalle →
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</ng-container>

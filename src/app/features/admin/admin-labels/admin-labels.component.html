@@ -1,0 +1,63 @@
+<div class="page-header">
+  <h1>Cola de revisión de etiquetas</h1>
+  <p>Revisa y gestiona las etiquetas enviadas por los usuarios.</p>
+</div>
+
+<div class="tabs-bar">
+  <button
+    *ngFor="let tab of tabs"
+    class="tab"
+    [class.active]="activeTab === tab.key"
+    (click)="setTab(tab.key)">
+    {{ tab.label }}
+    <span class="tab-count" *ngIf="tabCount(tab.key) > 0">{{ tabCount(tab.key) }}</span>
+  </button>
+</div>
+
+<div *ngIf="isLoading" class="loading-state">
+  <div class="spinner"></div>
+</div>
+
+<div *ngIf="!isLoading">
+  <app-empty-state
+    *ngIf="filteredLabels.length === 0"
+    message="No hay etiquetas en esta categoría.">
+  </app-empty-state>
+
+  <div class="card" *ngIf="filteredLabels.length > 0">
+    <table class="labels-table">
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Versión</th>
+          <th>Formato</th>
+          <th>Enviada</th>
+          <th>Estado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let label of filteredLabels">
+          <td class="product-cell">
+            <div class="file-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+              </svg>
+            </div>
+            {{ label.product_name || 'Producto #' + label.product }}
+          </td>
+          <td>Versión {{ label.version }}</td>
+          <td>{{ label.file_type.toUpperCase() }}</td>
+          <td>{{ label.submitted_at | date:'d MMM yyyy' }}</td>
+          <td><app-status-badge [status]="label.status" type="label"></app-status-badge></td>
+          <td>
+            <a [routerLink]="['/admin/labels', label.id]" class="btn-review">
+              Revisar →
+            </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

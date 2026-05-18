@@ -1,0 +1,52 @@
+<div class="page-header">
+  <h1>Tickets de soporte</h1>
+  <p>Gestiona y responde los tickets enviados por los usuarios.</p>
+</div>
+
+<div class="tabs-bar">
+  <button
+    *ngFor="let tab of tabs"
+    class="tab"
+    [class.active]="activeTab === tab.key"
+    (click)="setTab(tab.key)">
+    {{ tab.label }}
+    <span class="tab-count" *ngIf="tabCount(tab.key) > 0">{{ tabCount(tab.key) }}</span>
+  </button>
+</div>
+
+<div *ngIf="isLoading" class="loading-state"><div class="spinner"></div></div>
+
+<div *ngIf="!isLoading">
+  <app-empty-state *ngIf="filteredTickets.length === 0" message="No hay tickets en esta categoría."></app-empty-state>
+
+  <div class="card" *ngIf="filteredTickets.length > 0">
+    <table class="tickets-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Asunto</th>
+          <th>Prioridad</th>
+          <th>Estado</th>
+          <th>Creado</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ticket of filteredTickets">
+          <td class="id-cell">#{{ ticket.id }}</td>
+          <td class="subject-cell">{{ ticket.subject }}</td>
+          <td>
+            <span class="priority-badge" [ngClass]="'priority-' + ticket.priority.toLowerCase()">
+              {{ ticket.priority }}
+            </span>
+          </td>
+          <td><app-status-badge [status]="ticket.status" type="ticket"></app-status-badge></td>
+          <td>{{ ticket.created_at | date:'d MMM yyyy' }}</td>
+          <td>
+            <a [routerLink]="['/admin/tickets', ticket.id]" class="btn-open">Ver →</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

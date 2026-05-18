@@ -1,0 +1,27 @@
+.back-link { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; display: inline-block; }
+.ticket-layout { display: grid; grid-template-columns: 1fr 280px; gap: 1.5rem; align-items: start; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.25rem; }
+.main-col, .side-col { display: flex; flex-direction: column; }
+.ticket-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; }
+.ticket-header h2 { font-size: 1.05rem; font-weight: 600; }
+.ticket-desc { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.4rem; line-height: 1.5; }
+.card h3 { font-size: 0.95rem; font-weight: 600; margin-bottom: 1rem; }
+.info-card h3 { margin-bottom: 0.75rem; }
+.info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 0.55rem 0; border-bottom: 1px solid var(--border); }
+.info-row:last-child { border-bottom: none; }
+.info-row span:first-child { color: var(--text-muted); }
+.priority-badge { font-size: 0.7rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 99px; text-transform: uppercase; }
+.priority-high   { background: #fee2e2; color: #991b1b; }
+.priority-medium { background: #fef9c3; color: #854d0e; }
+.priority-low    { background: #f3f4f6; color: #6b7280; }
+.status-options { display: flex; flex-direction: column; gap: 0.4rem; }
+.status-option {
+  padding: 0.6rem 1rem; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--surface); text-align: left; font-size: 0.875rem;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.status-option:hover  { border-color: var(--primary-blue); color: var(--primary-blue); }
+.status-option.active { background: var(--primary-blue); border-color: var(--primary-blue); color: white; font-weight: 600; }
+.loading-state { display: flex; justify-content: center; padding: 4rem; }
+.spinner { width: 2rem; height: 2rem; border: 3px solid var(--border); border-top-color: var(--primary-blue); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

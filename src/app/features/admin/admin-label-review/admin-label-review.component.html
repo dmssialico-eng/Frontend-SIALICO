@@ -1,0 +1,128 @@
+<div class="page-header">
+  <a routerLink="/admin/labels" class="back-link">← Volver a cola de revisión</a>
+</div>
+
+<div *ngIf="isLoading" class="loading-state"><div class="spinner"></div></div>
+
+<ng-container *ngIf="label && !isLoading">
+
+  <div class="review-layout">
+
+    <!-- Visor de etiqueta -->
+    <div class="viewer-col">
+      <div class="card">
+        <div class="viewer-meta">
+          <div>
+            <h2>{{ label.product_name || 'Producto #' + label.product }}</h2>
+            <span class="meta-sub">Versión {{ label.version }} · {{ label.file_type.toUpperCase() }} · Enviada {{ label.submitted_at | date:'d MMM yyyy' }}</span>
+          </div>
+          <app-status-badge [status]="label.status" type="label"></app-status-badge>
+        </div>
+
+        <!-- Imagen -->
+        <div class="label-viewer" *ngIf="label.file_type !== 'pdf'">
+          <img [src]="label.file_url" alt="Etiqueta" class="label-img">
+        </div>
+
+        <!-- PDF -->
+        <div class="label-viewer pdf-frame" *ngIf="label.file_type === 'pdf'">
+          <iframe [src]="label.file_url" width="100%" height="600" frameborder="0"></iframe>
+        </div>
+
+        <div class="viewer-actions">
+          <a [href]="label.file_url" target="_blank" class="btn-outline">↓ Descargar original</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel de decisión -->
+    <div class="decision-col">
+
+      <!-- Éxito -->
+      <div class="card success-card" *ngIf="successMessage">
+        <div class="success-icon">✓</div>
+        <p>{{ successMessage }}</p>
+        <p class="muted">Redirigiendo...</p>
+      </div>
+
+      <ng-container *ngIf="!successMessage">
+
+        <!-- Info del label si ya fue revisado -->
+        <div class="card already-reviewed" *ngIf="label.status === 'approved' || label.status === 'needs_changes'">
+          <p>Esta etiqueta ya fue revisada. Puedes modificar la decisión enviando una nueva revisión.</p>
+          <div class="existing-feedback" *ngIf="label.feedback">
+            <strong>Retroalimentación previa:</strong>
+            <p>{{ label.feedback }}</p>
+          </div>
+        </div>
+
+        <!-- Selector de decisión -->
+        <div class="card decision-card">
+          <h3>Decisión de revisión</h3>
+
+          <div class="decision-buttons">
+            <button
+              class="decision-btn approve"
+              [class.selected]="decision === 'approved'"
+              (click)="setDecision('approved')">
+              <span class="decision-icon">✓</span>
+              Aprobar etiqueta
+            </button>
+            <button
+              class="decision-btn reject"
+              [class.selected]="decision === 'needs_changes'"
+              (click)="setDecision('needs_changes')">
+              <span class="decision-icon">!</span>
+              Solicitar cambios
+            </button>
+          </div>
+
+          <form [formGroup]="reviewForm" (ngSubmit)="submitReview()" *ngIf="decision">
+            <div class="form-group">
+              <label>
+                Retroalimentación
+                <span *ngIf="decision === 'needs_changes'" class="required">*</span>
+              </label>
+              <textarea
+                formControlName="feedback"
+                rows="5"
+                [placeholder]="decision === 'approved'
+                  ? 'Opcional: agrega algún comentario positivo...'
+                  : 'Explica con detalle qué cambios se requieren...'">
+              </textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Adjuntar documento de retroalimentación (opcional)</label>
+              <div class="file-input-wrapper">
+                <label class="file-input-label" for="feedbackFile">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="17 8 12 3 7 8"></polyline>
+                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                  </svg>
+                  {{ feedbackFile ? feedbackFile.name : 'Seleccionar archivo...' }}
+                </label>
+                <input id="feedbackFile" type="file" accept=".pdf,.docx,.png,.jpg" (change)="onFeedbackFile($event)" style="display:none">
+              </div>
+            </div>
+
+            <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+            <div class="submit-area">
+              <app-primary-button
+                type="submit"
+                [loading]="isSubmitting"
+                [disabled]="!canSubmit">
+                {{ decision === 'approved' ? 'Confirmar aprobación' : 'Enviar solicitud de cambios' }}
+              </app-primary-button>
+            </div>
+          </form>
+        </div>
+
+      </ng-container>
+    </div>
+
+  </div>
+
+</ng-container>

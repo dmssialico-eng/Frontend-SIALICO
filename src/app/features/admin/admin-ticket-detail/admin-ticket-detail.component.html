@@ -1,0 +1,64 @@
+<div class="page-header">
+  <a routerLink="/admin/tickets" class="back-link">← Volver a tickets</a>
+</div>
+
+<div *ngIf="isLoading" class="loading-state"><div class="spinner"></div></div>
+
+<ng-container *ngIf="ticket && !isLoading">
+  <div class="ticket-layout">
+
+    <div class="main-col">
+      <div class="card">
+        <div class="ticket-header">
+          <div>
+            <h2>#{{ ticket.id }} — {{ ticket.subject }}</h2>
+            <p class="ticket-desc">{{ ticket.description }}</p>
+          </div>
+          <app-status-badge [status]="ticket.status" type="ticket"></app-status-badge>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Conversación</h3>
+        <app-ticket-thread
+          [messages]="messages"
+          [isSending]="isSending"
+          [currentUserId]="currentUserId"
+          (send)="onSendMessage($event)">
+        </app-ticket-thread>
+      </div>
+    </div>
+
+    <div class="side-col">
+      <div class="card info-card">
+        <h3>Detalles</h3>
+        <div class="info-row">
+          <span>Prioridad</span>
+          <span class="priority-badge" [ngClass]="'priority-' + ticket.priority.toLowerCase()">{{ ticket.priority }}</span>
+        </div>
+        <div class="info-row">
+          <span>Creado</span>
+          <span>{{ ticket.created_at | date:'d MMM yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <span>Actualizado</span>
+          <span>{{ ticket.updated_at | date:'d MMM yyyy' }}</span>
+        </div>
+      </div>
+
+      <div class="card status-card">
+        <h3>Cambiar estado</h3>
+        <div class="status-options">
+          <button
+            *ngFor="let opt of statusOptions"
+            class="status-option"
+            [class.active]="ticket.status === opt.value"
+            (click)="changeStatus(opt.value)">
+            {{ opt.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ng-container>

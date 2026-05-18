@@ -1,0 +1,65 @@
+.page-header { margin-bottom: 1.5rem; }
+.page-header h1 { font-size: 1.4rem; font-weight: 700; }
+.page-header p  { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem; }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+.users-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.users-table th {
+  text-align: left; padding: 0.75rem 1rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+  background: var(--page-bg); border-bottom: 1px solid var(--border);
+}
+.users-table td { padding: 0.9rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.users-table tr:last-child td { border-bottom: none; }
+.users-table tr:hover td { background: var(--page-bg); }
+
+.user-cell { display: flex; align-items: center; gap: 0.75rem; }
+.avatar {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: rgba(20,99,255,0.1); color: var(--primary-blue);
+  font-size: 0.85rem; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.email-cell { color: var(--text-muted); font-size: 0.82rem; }
+
+.role-badge {
+  font-size: 0.7rem; font-weight: 700; padding: 0.15rem 0.55rem;
+  border-radius: 99px; text-transform: uppercase;
+}
+.role-admin { background: rgba(236,11,117,0.1); color: var(--accent-pink); }
+.role-user  { background: rgba(20,99,255,0.08); color: var(--primary-blue); }
+
+.status-dot {
+  font-size: 0.8rem; font-weight: 600; display: flex;
+  align-items: center; gap: 0.4rem;
+}
+.status-dot::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+}
+.status-dot.active   { color: #166534; }
+.status-dot.active::before   { background: var(--success); }
+.status-dot.inactive { color: var(--text-muted); }
+.status-dot.inactive::before { background: var(--border); }
+
+.btn-toggle {
+  padding: 0.4rem 0.85rem; border-radius: 6px;
+  font-size: 0.8rem; font-weight: 600; cursor: pointer;
+  font-family: inherit; border: 1px solid; transition: all 0.2s;
+}
+.btn-toggle.deactivate { border-color: var(--danger); color: var(--danger); background: white; }
+.btn-toggle.deactivate:hover { background: var(--danger); color: white; }
+.btn-toggle.activate { border-color: var(--success); color: var(--success); background: white; }
+.btn-toggle.activate:hover { background: var(--success); color: white; }
+.btn-toggle:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.empty-msg { color: var(--text-muted); text-align: center; padding: 3rem; font-size: 0.9rem; }
+
+.loading-state { display: flex; justify-content: center; padding: 4rem; }
+.spinner {
+  width: 2rem; height: 2rem; border: 3px solid var(--border);
+  border-top-color: var(--primary-blue); border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }

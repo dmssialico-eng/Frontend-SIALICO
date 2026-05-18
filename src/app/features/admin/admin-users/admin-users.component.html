@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h1>Gestión de usuarios</h1>
+  <p>Consulta y administra todos los usuarios registrados en la plataforma.</p>
+</div>
+
+<div *ngIf="isLoading" class="loading-state"><div class="spinner"></div></div>
+
+<div *ngIf="!isLoading">
+
+  <div class="empty-msg" *ngIf="users.length === 0">
+    No hay usuarios registrados.
+  </div>
+
+  <div class="card" *ngIf="users.length > 0">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Empresa</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+
+          <td>
+            <div class="user-cell">
+              <div class="avatar">{{ user.full_name.charAt(0) || 'U' }}</div>
+              <span>{{ user.full_name }}</span>
+            </div>
+          </td>
+
+          <td class="email-cell">{{ user.email }}</td>
+          <td>{{ user.company_name || '—' }}</td>
+
+          <td>
+            <span class="role-badge" [ngClass]="'role-' + user.role">
+              {{ user.role }}
+            </span>
+          </td>
+
+          <td>
+            <span class="status-dot" [ngClass]="user.is_active ? 'active' : 'inactive'">
+              {{ user.is_active ? 'Activo' : 'Inactivo' }}
+            </span>
+          </td>
+
+          <td>
+            <button
+              class="btn-toggle"
+              [ngClass]="user.is_active ? 'deactivate' : 'activate'"
+              [disabled]="togglingId === user.id"
+              (click)="toggleActive(user)">
+              {{ togglingId === user.id ? '...' : (user.is_active ? 'Desactivar' : 'Activar') }}
+            </button>
+          </td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>

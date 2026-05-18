@@ -1,0 +1,59 @@
+.page-header { margin-bottom: 1.5rem; }
+.page-header h1 { font-size: 1.4rem; font-weight: 700; }
+.page-header p  { color: var(--text-muted); font-size: 0.875rem; margin-top: 0.25rem; }
+
+.tabs-bar { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+.tab {
+  padding: 0.5rem 1rem; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface); color: var(--text-muted);
+  font-size: 0.875rem; font-weight: 500; cursor: pointer;
+  transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem;
+  font-family: inherit;
+}
+.tab:hover  { border-color: var(--accent-pink); color: var(--accent-pink); }
+.tab.active { background: var(--accent-pink); border-color: var(--accent-pink); color: white; }
+
+.tab-count {
+  background: rgba(255,255,255,0.25);
+  border-radius: 99px;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  font-weight: 700;
+}
+.tab:not(.active) .tab-count { background: var(--soft-bg); color: var(--text-muted); }
+
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+
+.labels-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.labels-table th {
+  text-align: left; padding: 0.75rem 1rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--text-muted);
+  background: var(--page-bg); border-bottom: 1px solid var(--border);
+}
+.labels-table td { padding: 1rem; border-bottom: 1px solid var(--border); }
+.labels-table tr:last-child td { border-bottom: none; }
+.labels-table tr:hover td { background: var(--page-bg); }
+
+.product-cell { display: flex; align-items: center; gap: 0.75rem; }
+.file-icon {
+  width: 32px; height: 32px; border-radius: 6px;
+  background: var(--soft-bg); color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+
+.btn-review {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--accent-pink);
+  border-radius: 6px;
+  color: var(--accent-pink);
+  font-size: 0.8rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-review:hover { background: var(--accent-pink); color: white; }
+
+.loading-state { display: flex; justify-content: center; padding: 4rem; }
+.spinner { width: 2rem; height: 2rem; border: 3px solid var(--border); border-top-color: var(--accent-pink); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
