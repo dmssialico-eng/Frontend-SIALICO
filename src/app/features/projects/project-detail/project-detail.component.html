@@ -9,30 +9,80 @@
 
 <div *ngIf="project && !isLoading">
 
-  <div class="project-header card">
-    <div class="flex-between">
-      <div>
-        <h1>{{ project.name }}</h1>
-        <p class="project-desc">{{ project.description || 'Sin descripción' }}</p>
+  <!-- Modal de confirmación de archivado -->
+  <div class="modal-overlay" *ngIf="showArchiveConfirm" (click)="showArchiveConfirm = false">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <h3>¿Archivar proyecto?</h3>
+      <p>El proyecto se marcará como archivado y no aparecerá en tu lista activa. Puedes solicitar su restauración al soporte.</p>
+      <div class="modal-actions">
+        <button class="btn-outline" (click)="showArchiveConfirm = false">Cancelar</button>
+        <button class="btn-danger" [disabled]="isArchiving" (click)="archiveProject()">
+          {{ isArchiving ? 'Archivando...' : 'Sí, archivar' }}
+        </button>
       </div>
-      <app-status-badge [status]="project.status" type="project"></app-status-badge>
-    </div>
-    <div class="project-meta">
-      <span>Creado: {{ project.created_at | date:'d MMM yyyy' }}</span>
-      <span>Última actualización: {{ project.updated_at | date:'d MMM yyyy' }}</span>
     </div>
   </div>
 
+  <!-- Encabezado / modo edición -->
+  <div class="project-header card">
+    <ng-container *ngIf="!isEditing">
+      <div class="flex-between">
+        <div>
+          <h1>{{ project.name }}</h1>
+          <p class="project-desc">{{ project.description || 'Sin descripción' }}</p>
+        </div>
+        <div class="header-actions">
+          <app-status-badge [status]="project.status" type="project"></app-status-badge>
+          <button class="btn-outline" (click)="isEditing = true" *ngIf="project.status !== 'ARCHIVED'">Editar</button>
+          <button class="btn-text-danger" (click)="showArchiveConfirm = true" *ngIf="project.status !== 'ARCHIVED'">Archivar</button>
+        </div>
+      </div>
+      <div class="project-meta">
+        <span>Creado: {{ project.created_at | date:'d MMM yyyy' }}</span>
+        <span>Última actualización: {{ project.updated_at | date:'d MMM yyyy' }}</span>
+      </div>
+    </ng-container>
+
+    <!-- Formulario de edición -->
+    <ng-container *ngIf="isEditing && editForm">
+      <h2>Editar proyecto</h2>
+      <form [formGroup]="editForm" (ngSubmit)="saveProject()">
+        <div class="form-group mt-2">
+          <label>Nombre del proyecto *</label>
+          <input type="text" formControlName="name" placeholder="Nombre del proyecto">
+        </div>
+        <div class="form-group mt-2">
+          <label>Descripción</label>
+          <input type="text" formControlName="description" placeholder="Descripción breve">
+        </div>
+        <div class="error-message" *ngIf="editError">{{ editError }}</div>
+        <div class="form-actions mt-3">
+          <app-primary-button type="submit" [loading]="isSaving" [disabled]="editForm.invalid">
+            Guardar cambios
+          </app-primary-button>
+          <button type="button" class="btn-outline" (click)="cancelEdit()">Cancelar</button>
+        </div>
+      </form>
+    </ng-container>
+  </div>
+
+  <!-- Sección de productos -->
   <div class="section-header">
     <h2>Productos</h2>
-    <button class="btn-outline" (click)="showProductForm = !showProductForm">
+    <button class="btn-outline" (click)="showProductForm = !showProductForm" *ngIf="project.status !== 'ARCHIVED'">
       {{ showProductForm ? 'Cancelar' : '+ Agregar producto' }}
     </button>
   </div>
 
   <div class="card form-card" *ngIf="showProductForm">
     <h3>Nuevo producto</h3>
-    <form [formGroup]="productForm" (ngSubmit)="submitProduct()">
+
+    <div class="loading-state small" *ngIf="isCatalogLoading">
+      <div class="spinner small"></div>
+      <span>Cargando opciones...</span>
+    </div>
+
+    <form [formGroup]="productForm" (ngSubmit)="submitProduct()" *ngIf="!isCatalogLoading">
       <div class="form-row">
         <div class="form-group">
           <label>Nombre del producto *</label>
@@ -43,6 +93,24 @@
           <input type="text" formControlName="description" placeholder="Descripción breve">
         </div>
       </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Categoría regulatoria *</label>
+          <select formControlName="category">
+            <option [ngValue]="null" disabled>Selecciona una categoría</option>
+            <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>País objetivo *</label>
+          <select formControlName="target_country">
+            <option [ngValue]="null" disabled>Selecciona un país</option>
+            <option *ngFor="let c of countries" [ngValue]="c.id">{{ c.name }} ({{ c.code }})</option>
+          </select>
+        </div>
+      </div>
+
       <div class="form-row">
         <div class="form-group">
           <label>Ingredientes</label>
@@ -53,12 +121,10 @@
           <textarea formControlName="claims" rows="2" placeholder="Ej. Sin gluten, Sin lactosa..."></textarea>
         </div>
       </div>
+
       <div class="error-message" *ngIf="productError">{{ productError }}</div>
       <div class="form-actions">
-        <app-primary-button
-          type="submit"
-          [loading]="isCreatingProduct"
-          [disabled]="productForm.invalid">
+        <app-primary-button type="submit" [loading]="isCreatingProduct" [disabled]="productForm.invalid">
           Crear producto
         </app-primary-button>
       </div>
@@ -88,9 +154,8 @@
         </div>
       </div>
       <div class="product-card__footer">
-        <a
-          [routerLink]="['/projects', project.id, 'products', product.id]"
-          class="btn-link">
+        <app-status-badge [status]="product.status" type="label"></app-status-badge>
+        <a [routerLink]="['/projects', project.id, 'products', product.id]" class="btn-link">
           Ver etiquetas →
         </a>
       </div>

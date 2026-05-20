@@ -1,0 +1,76 @@
+<div class="page-header">
+  <h1>Pagos</h1>
+  <p>Gestiona y confirma los pagos de suscripción de los usuarios.</p>
+</div>
+
+<!-- Error global -->
+<div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+<!-- Tabs -->
+<div class="tabs-bar">
+  <button
+    *ngFor="let tab of tabs"
+    class="tab"
+    [class.active]="activeTab === tab.key"
+    (click)="selectTab(tab.key)">
+    {{ tab.label }}
+  </button>
+</div>
+
+<!-- Loading -->
+<div class="loading-state" *ngIf="isLoading">
+  <div class="spinner"></div>
+</div>
+
+<!-- Empty -->
+<div class="empty-state" *ngIf="!isLoading && payments.length === 0">
+  <p>No hay pagos en esta categoría.</p>
+</div>
+
+<!-- Tabla -->
+<div class="card" *ngIf="!isLoading && payments.length > 0">
+  <table class="payments-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Usuario</th>
+        <th>Concepto</th>
+        <th>Monto</th>
+        <th>Método</th>
+        <th>Fecha</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of payments">
+        <td class="id-cell">#{{ p.id }}</td>
+        <td>{{ p.user }}</td>
+        <td class="concept-cell">{{ p.concept || p.plan }}</td>
+        <td class="amount-cell">{{ formatCurrency(p.amount, p.currency) }}</td>
+        <td>{{ p.method || '—' }}</td>
+        <td class="date-cell">{{ p.created_at | date:'d MMM yyyy' }}</td>
+        <td>
+          <app-status-badge [status]="p.status" type="payment"></app-status-badge>
+        </td>
+        <td class="actions-cell">
+          <ng-container *ngIf="p.status?.toUpperCase() === 'PENDING'">
+            <button
+              class="btn-confirm"
+              [disabled]="actioningId === p.id"
+              (click)="confirm(p)">
+              {{ actioningId === p.id ? '...' : 'Confirmar' }}
+            </button>
+            <button
+              class="btn-reject"
+              [disabled]="actioningId === p.id"
+              (click)="reject(p)">
+              Rechazar
+            </button>
+          </ng-container>
+          <span *ngIf="p.status?.toUpperCase() !== 'PENDING'" class="no-action">—</span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

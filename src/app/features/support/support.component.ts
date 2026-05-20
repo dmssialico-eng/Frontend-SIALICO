@@ -25,27 +25,34 @@ type SupportView = 'list' | 'new' | 'detail';
 })
 export class SupportComponent implements OnInit {
   view: SupportView = 'list';
-  tickets: Ticket[] = [];
-  selectedTicket: Ticket | null = null;
-  messages: TicketMessage[] = [];
-  currentUserId: number | null = null;
+  tickets:        Ticket[]        = [];
+  selectedTicket: Ticket | null   = null;
+  messages:       TicketMessage[] = [];
+  currentUserId:  number | null   = null;
 
-  isLoadingTickets = true;
+  isLoadingTickets  = true;
   isLoadingMessages = false;
-  isCreating = false;
-  isSending = false;
+  isCreating        = false;
+  isSending         = false;
 
   newTicketForm!: FormGroup;
 
+  priorityOptions = [
+    { value: 'LOW',      label: 'Baja' },
+    { value: 'MEDIUM',   label: 'Media' },
+    { value: 'HIGH',     label: 'Alta' },
+    { value: 'CRITICAL', label: 'Crítica' },
+  ];
+
   constructor(
     private ticketService: TicketService,
-    private authService: AuthService,
-    private fb: FormBuilder
+    private authService:   AuthService,
+    private fb:            FormBuilder
   ) {}
 
   ngOnInit() {
     const user = this.authService.getCurrentUser();
-    this.currentUserId = user?.id || null;
+    this.currentUserId = user?.id ?? null;
 
     this.newTicketForm = this.fb.group({
       subject:     ['', Validators.required],
@@ -60,7 +67,7 @@ export class SupportComponent implements OnInit {
     this.isLoadingTickets = true;
     this.ticketService.getTickets().subscribe({
       next: (res: any) => {
-        this.tickets = res.results || res;
+        this.tickets = res.results ?? res;
         this.isLoadingTickets = false;
       },
       error: () => { this.isLoadingTickets = false; }
@@ -75,7 +82,7 @@ export class SupportComponent implements OnInit {
 
     this.ticketService.getTicketMessages(ticket.id).subscribe({
       next: (res: any) => {
-        this.messages = res.results || res;
+        this.messages = res.results ?? res;
         this.isLoadingMessages = false;
       },
       error: () => { this.isLoadingMessages = false; }
@@ -114,5 +121,9 @@ export class SupportComponent implements OnInit {
     this.view = 'list';
     this.selectedTicket = null;
     this.messages = [];
+  }
+
+  isOpen(ticket: Ticket): boolean {
+    return ticket.status?.toUpperCase() !== 'CLOSED';
   }
 }

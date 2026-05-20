@@ -22,35 +22,33 @@ import { Product, Label } from '../../../core/models/models';
   styleUrls: ['./product-detail.component.css']
 })
 export class ProductDetailComponent implements OnInit {
-  product: Product | null = null;
-  labels: Label[] = [];
-  projectId: number | null = null;
-  isLoading = true;
+  product:   Product | null = null;
+  labels:    Label[]        = [];
+  projectId: number | null  = null;
+  isLoading  = true;
 
   constructor(
-    private route: ActivatedRoute,
+    private route:          ActivatedRoute,
     private productService: ProductService,
-    private labelService: LabelService
+    private labelService:   LabelService
   ) {}
 
   ngOnInit() {
-    const pid = this.route.snapshot.paramMap.get('productId');
+    const pid    = this.route.snapshot.paramMap.get('productId');
     const projId = this.route.snapshot.paramMap.get('id');
     this.projectId = projId ? +projId : null;
 
     if (pid) {
-      // Cargar producto
       this.productService.getProductsByProject(this.projectId!).subscribe({
         next: (res) => {
-          const all: Product[] = res.results || res;
-          this.product = all.find(p => p.id === +pid) || null;
+          const all: Product[] = res.results ?? res;
+          this.product = all.find(p => p.id === +pid) ?? null;
         }
       });
 
-      // Cargar etiquetas
       this.labelService.getLabelsByProduct(+pid).subscribe({
-        next: (res: any) => {
-          this.labels = (res.results || res) as Label[];
+        next: (labels) => {
+          this.labels    = labels;
           this.isLoading = false;
         },
         error: () => { this.isLoading = false; }

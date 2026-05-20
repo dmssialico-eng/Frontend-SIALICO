@@ -1,0 +1,64 @@
+<div class="page-header">
+  <h1>Auditoría del sistema</h1>
+  <p>Registro de acciones realizadas por actores en la plataforma.</p>
+</div>
+
+<!-- Filtros -->
+<form [formGroup]="filterForm" class="filter-bar">
+  <div class="filter-group">
+    <label>Entidad</label>
+    <input type="text" formControlName="entity" placeholder="Ej. Label, User, Payment…">
+  </div>
+  <div class="filter-group">
+    <label>Actor (email)</label>
+    <input type="text" formControlName="actor" placeholder="Ej. admin@sialico.mx">
+  </div>
+</form>
+
+<!-- Error -->
+<div class="error-banner" *ngIf="errorMsg">{{ errorMsg }}</div>
+
+<!-- Loading -->
+<div class="loading-state" *ngIf="isLoading">
+  <div class="spinner"></div>
+</div>
+
+<!-- Empty -->
+<div class="empty-state" *ngIf="!isLoading && logs.length === 0">
+  <p>No hay registros que coincidan con los filtros.</p>
+</div>
+
+<!-- Tabla -->
+<div class="card" *ngIf="!isLoading && logs.length > 0">
+  <table class="audit-table">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Actor</th>
+        <th>Acción</th>
+        <th>Entidad</th>
+        <th>ID</th>
+        <th>IP</th>
+        <th>Detalle</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let log of logs">
+        <td class="date-cell">{{ log.created_at | date:'d MMM yyyy, HH:mm' }}</td>
+        <td class="actor-cell">{{ log.actor_email || log.actor || '—' }}</td>
+        <td><span class="action-badge">{{ log.action }}</span></td>
+        <td>{{ log.entity_name }}</td>
+        <td class="id-cell">{{ log.entity_id ?? '—' }}</td>
+        <td class="ip-cell">{{ log.ip_address || '—' }}</td>
+        <td class="meta-cell" title="{{ formatMetadata(log.metadata) }}">{{ formatMetadata(log.metadata) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Paginación -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button class="page-btn" [disabled]="page === 1" (click)="prevPage()">← Anterior</button>
+    <span class="page-info">Página {{ page }} de {{ totalPages }} ({{ totalCount }} registros)</span>
+    <button class="page-btn" [disabled]="page >= totalPages" (click)="nextPage()">Siguiente →</button>
+  </div>
+</div>

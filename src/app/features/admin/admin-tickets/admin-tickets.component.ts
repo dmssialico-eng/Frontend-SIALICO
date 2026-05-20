@@ -6,7 +6,7 @@ import { StatusBadgeComponent } from '../../../shared/components/status-badge/st
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { Ticket } from '../../../core/models/models';
 
-type TicketTab = 'open' | 'in_progress' | 'resolved' | 'all';
+type TicketTab = 'OPEN' | 'IN_PROGRESS' | 'ANSWERED' | 'ALL';
 
 @Component({
   selector: 'app-admin-tickets',
@@ -16,16 +16,16 @@ type TicketTab = 'open' | 'in_progress' | 'resolved' | 'all';
   styleUrls: ['./admin-tickets.component.css']
 })
 export class AdminTicketsComponent implements OnInit {
-  allTickets: Ticket[] = [];
+  allTickets:      Ticket[] = [];
   filteredTickets: Ticket[] = [];
-  activeTab: TicketTab = 'open';
+  activeTab: TicketTab = 'OPEN';
   isLoading = true;
 
   tabs: { key: TicketTab; label: string }[] = [
-    { key: 'open',        label: 'Abiertos' },
-    { key: 'in_progress', label: 'En proceso' },
-    { key: 'resolved',    label: 'Resueltos' },
-    { key: 'all',         label: 'Todos' },
+    { key: 'OPEN',        label: 'Abiertos' },
+    { key: 'IN_PROGRESS', label: 'En proceso' },
+    { key: 'ANSWERED',    label: 'Respondidos' },
+    { key: 'ALL',         label: 'Todos' },
   ];
 
   constructor(private adminService: AdminService) {}
@@ -33,7 +33,7 @@ export class AdminTicketsComponent implements OnInit {
   ngOnInit() {
     this.adminService.getAllTickets().subscribe({
       next: (res: any) => {
-        this.allTickets = res.results || res;
+        this.allTickets = res.results ?? res;
         this.applyFilter();
         this.isLoading = false;
       },
@@ -47,15 +47,17 @@ export class AdminTicketsComponent implements OnInit {
   }
 
   applyFilter() {
-    if (this.activeTab === 'all') {
+    if (this.activeTab === 'ALL') {
       this.filteredTickets = this.allTickets;
     } else {
-      this.filteredTickets = this.allTickets.filter(t => t.status === this.activeTab);
+      this.filteredTickets = this.allTickets.filter(
+        t => t.status?.toUpperCase() === this.activeTab
+      );
     }
   }
 
   tabCount(key: TicketTab): number {
-    if (key === 'all') return this.allTickets.length;
-    return this.allTickets.filter(t => t.status === key).length;
+    if (key === 'ALL') return this.allTickets.length;
+    return this.allTickets.filter(t => t.status?.toUpperCase() === key).length;
   }
 }

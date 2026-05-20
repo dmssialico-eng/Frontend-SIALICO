@@ -16,41 +16,39 @@ import { Ticket, TicketMessage } from '../../../core/models/models';
   styleUrls: ['./admin-ticket-detail.component.css']
 })
 export class AdminTicketDetailComponent implements OnInit {
-  ticket: Ticket | null = null;
-  messages: TicketMessage[] = [];
-  isLoading = true;
-  isSending = false;
+  ticket:    Ticket | null    = null;
+  messages:  TicketMessage[]  = [];
+  isLoading  = true;
+  isSending  = false;
   currentUserId: number | null = null;
 
   statusOptions = [
-    { value: 'open',        label: 'Abierto' },
-    { value: 'in_progress', label: 'En proceso' },
-    { value: 'resolved',    label: 'Resuelto' },
-    { value: 'closed',      label: 'Cerrado' },
+    { value: 'OPEN',        label: 'Abierto' },
+    { value: 'IN_PROGRESS', label: 'En proceso' },
+    { value: 'ANSWERED',    label: 'Respondido' },
+    { value: 'CLOSED',      label: 'Cerrado' },
   ];
 
   constructor(
-    private route: ActivatedRoute,
+    private route:       ActivatedRoute,
     private ticketService: TicketService,
-    private adminService: AdminService,
-    private authService: AuthService
+    private adminService:  AdminService,
+    private authService:   AuthService
   ) {}
 
   ngOnInit() {
     const user = this.authService.getCurrentUser();
-    this.currentUserId = user?.id || null;
+    this.currentUserId = user?.id ?? null;
 
     const id = this.route.snapshot.paramMap.get('id');
-    if (id) {
-      this.loadTicket(+id);
-    }
+    if (id) this.loadTicket(+id);
   }
 
   loadTicket(id: number) {
-    this.ticketService.getTickets().subscribe({
-      next: (res: any) => {
-        const all: Ticket[] = res.results || res;
-        this.ticket = all.find(t => t.id === id) || null;
+    // Carga el ticket individual via GET /api/tickets/{id}/
+    this.ticketService.getTicketById(id).subscribe({
+      next: (ticket) => {
+        this.ticket = ticket;
         this.loadMessages(id);
       },
       error: () => { this.isLoading = false; }
@@ -60,7 +58,7 @@ export class AdminTicketDetailComponent implements OnInit {
   loadMessages(ticketId: number) {
     this.ticketService.getTicketMessages(ticketId).subscribe({
       next: (res: any) => {
-        this.messages = res.results || res;
+        this.messages = res.results ?? res;
         this.isLoading = false;
       },
       error: () => { this.isLoading = false; }
@@ -83,7 +81,7 @@ export class AdminTicketDetailComponent implements OnInit {
     if (!this.ticket) return;
     this.adminService.updateTicketStatus(this.ticket.id, newStatus).subscribe({
       next: (updated) => {
-        if (this.ticket) this.ticket.status = updated.status;
+        if (this.ticket) this.ticket = { ...this.ticket, status: updated.status };
       }
     });
   }

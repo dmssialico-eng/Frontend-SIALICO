@@ -30,8 +30,7 @@
         <tr>
           <th>Producto</th>
           <th>Versión</th>
-          <th>Formato</th>
-          <th>Enviada</th>
+          <th>Actualizada</th>
           <th>Estado</th>
           <th>Acción</th>
         </tr>
@@ -45,12 +44,11 @@
                 <polyline points="14 2 14 8 20 8"></polyline>
               </svg>
             </div>
-            {{ label.product_name || 'Producto #' + label.product }}
+            Producto #{{ label.product }}
           </td>
-          <td>Versión {{ label.version }}</td>
-          <td>{{ label.file_type.toUpperCase() }}</td>
-          <td>{{ label.submitted_at | date:'d MMM yyyy' }}</td>
-          <td><app-status-badge [status]="label.status" type="label"></app-status-badge></td>
+          <td>v{{ label.current_version_number }}</td>
+          <td>{{ label.updated_at | date:'d MMM yyyy' }}</td>
+          <td><app-status-badge [status]="label.current_status" type="label"></app-status-badge></td>
           <td>
             <a [routerLink]="['/admin/labels', label.id]" class="btn-review">
               Revisar →

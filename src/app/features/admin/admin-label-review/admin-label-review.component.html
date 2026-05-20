@@ -4,41 +4,60 @@
 
 <div *ngIf="isLoading" class="loading-state"><div class="spinner"></div></div>
 
-<ng-container *ngIf="label && !isLoading">
+<ng-container *ngIf="!isLoading">
 
-  <div class="review-layout">
+  <!-- Sin versión para revisar -->
+  <div class="card empty-review" *ngIf="!targetVersion">
+    <p>No hay versiones pendientes de revisión para esta etiqueta.</p>
+    <a routerLink="/admin/labels" class="btn-outline mt-2">Volver a la cola</a>
+  </div>
 
-    <!-- Visor de etiqueta -->
+  <div class="review-layout" *ngIf="targetVersion && label">
+
+    <!-- Columna izquierda: info de la versión -->
     <div class="viewer-col">
       <div class="card">
         <div class="viewer-meta">
           <div>
-            <h2>{{ label.product_name || 'Producto #' + label.product }}</h2>
-            <span class="meta-sub">Versión {{ label.version }} · {{ label.file_type.toUpperCase() }} · Enviada {{ label.submitted_at | date:'d MMM yyyy' }}</span>
+            <h2>Producto #{{ label.product }}</h2>
+            <span class="meta-sub">
+              Versión {{ targetVersion.version_number }}
+              &middot; Enviada {{ targetVersion.submitted_at | date:'d MMM yyyy' }}
+            </span>
           </div>
-          <app-status-badge [status]="label.status" type="label"></app-status-badge>
+          <app-status-badge [status]="targetVersion.status" type="label"></app-status-badge>
         </div>
 
-        <!-- Imagen -->
-        <div class="label-viewer" *ngIf="label.file_type !== 'pdf'">
-          <img [src]="label.file_url" alt="Etiqueta" class="label-img">
+        <div class="viewer-actions mt-3">
+          <span class="muted small">
+            ID etiqueta: {{ label.id }} &middot; ID versión: {{ targetVersion.id }}
+          </span>
         </div>
 
-        <!-- PDF -->
-        <div class="label-viewer pdf-frame" *ngIf="label.file_type === 'pdf'">
-          <iframe [src]="label.file_url" width="100%" height="600" frameborder="0"></iframe>
+        <div class="version-notes card-inner mt-3" *ngIf="targetVersion.notes">
+          <strong>Notas del cliente:</strong>
+          <p>{{ targetVersion.notes }}</p>
         </div>
 
-        <div class="viewer-actions">
-          <a [href]="label.file_url" target="_blank" class="btn-outline">↓ Descargar original</a>
+        <!-- Historial de versiones -->
+        <div class="mt-4" *ngIf="versions.length > 1">
+          <h3 class="section-sub">Historial de versiones</h3>
+          <div class="version-history">
+            <div class="version-row" *ngFor="let v of versions; let i = index"
+                 [class.current]="v.id === targetVersion.id">
+              <span class="v-num">v{{ v.version_number }}</span>
+              <app-status-badge [status]="v.status" type="label"></app-status-badge>
+              <span class="v-date muted">{{ v.submitted_at | date:'d MMM' }}</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Panel de decisión -->
+    <!-- Columna derecha: formulario de decisión -->
     <div class="decision-col">
 
-      <!-- Éxito -->
+      <!-- Mensaje de éxito -->
       <div class="card success-card" *ngIf="successMessage">
         <div class="success-icon">✓</div>
         <p>{{ successMessage }}</p>
@@ -47,12 +66,12 @@
 
       <ng-container *ngIf="!successMessage">
 
-        <!-- Info del label si ya fue revisado -->
-        <div class="card already-reviewed" *ngIf="label.status === 'approved' || label.status === 'needs_changes'">
-          <p>Esta etiqueta ya fue revisada. Puedes modificar la decisión enviando una nueva revisión.</p>
-          <div class="existing-feedback" *ngIf="label.feedback">
-            <strong>Retroalimentación previa:</strong>
-            <p>{{ label.feedback }}</p>
+        <!-- Revisión previa -->
+        <div class="card already-reviewed" *ngIf="existingReview">
+          <p class="muted small">Esta versión ya tiene una revisión registrada. Puedes modificarla enviando una nueva decisión.</p>
+          <div class="existing-summary" *ngIf="existingReview.summary">
+            <strong>Resumen previo:</strong>
+            <p>{{ existingReview.summary }}</p>
           </div>
         </div>
 
@@ -63,58 +82,74 @@
           <div class="decision-buttons">
             <button
               class="decision-btn approve"
-              [class.selected]="decision === 'approved'"
-              (click)="setDecision('approved')">
+              [class.selected]="decision === 'APPROVED'"
+              (click)="setDecision('APPROVED')">
               <span class="decision-icon">✓</span>
               Aprobar etiqueta
             </button>
             <button
               class="decision-btn reject"
-              [class.selected]="decision === 'needs_changes'"
-              (click)="setDecision('needs_changes')">
+              [class.selected]="decision === 'CHANGES_REQUIRED'"
+              (click)="setDecision('CHANGES_REQUIRED')">
               <span class="decision-icon">!</span>
               Solicitar cambios
             </button>
           </div>
 
           <form [formGroup]="reviewForm" (ngSubmit)="submitReview()" *ngIf="decision">
-            <div class="form-group">
+
+            <div class="form-group mt-3">
+              <label>Resumen ejecutivo <span class="optional">(opcional)</span></label>
+              <input
+                type="text"
+                formControlName="summary"
+                placeholder="Ej. Etiqueta cumple con NOM-051 salvo sección de alérgenos">
+            </div>
+
+            <div class="form-group mt-3">
               <label>
-                Retroalimentación
-                <span *ngIf="decision === 'needs_changes'" class="required">*</span>
+                Observaciones detalladas
+                <span class="required" *ngIf="decision === 'CHANGES_REQUIRED'">*</span>
               </label>
               <textarea
-                formControlName="feedback"
-                rows="5"
-                [placeholder]="decision === 'approved'
-                  ? 'Opcional: agrega algún comentario positivo...'
-                  : 'Explica con detalle qué cambios se requieren...'">
+                formControlName="observations"
+                rows="6"
+                [placeholder]="decision === 'APPROVED'
+                  ? 'Opcional: comentarios adicionales...'
+                  : 'Detalla con precisión los cambios requeridos: sección, normativa aplicable y corrección esperada...'">
               </textarea>
             </div>
 
-            <div class="form-group">
-              <label>Adjuntar documento de retroalimentación (opcional)</label>
-              <div class="file-input-wrapper">
-                <label class="file-input-label" for="feedbackFile">
+            <!-- Adjunto -->
+            <div class="form-group mt-3">
+              <label>Adjuntar archivo de retroalimentación <span class="optional">(opcional)</span></label>
+
+              <select class="form-select" [(ngModel)]="attachmentType" [ngModelOptions]="{standalone: true}">
+                <option *ngFor="let t of attachmentTypes" [value]="t.value">{{ t.label }}</option>
+              </select>
+
+              <div class="file-input-wrapper mt-2">
+                <label class="file-input-label" for="attachFile">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                     <polyline points="17 8 12 3 7 8"></polyline>
                     <line x1="12" y1="3" x2="12" y2="15"></line>
                   </svg>
-                  {{ feedbackFile ? feedbackFile.name : 'Seleccionar archivo...' }}
+                  {{ attachmentFile ? attachmentFile.name : 'Seleccionar archivo...' }}
                 </label>
-                <input id="feedbackFile" type="file" accept=".pdf,.docx,.png,.jpg" (change)="onFeedbackFile($event)" style="display:none">
+                <input id="attachFile" type="file" accept=".pdf,.docx,.png,.jpg"
+                       (change)="onAttachmentFile($event)" style="display:none">
               </div>
             </div>
 
             <div class="error-msg" *ngIf="errorMessage">{{ errorMessage }}</div>
 
-            <div class="submit-area">
+            <div class="submit-area mt-4">
               <app-primary-button
                 type="submit"
                 [loading]="isSubmitting"
                 [disabled]="!canSubmit">
-                {{ decision === 'approved' ? 'Confirmar aprobación' : 'Enviar solicitud de cambios' }}
+                {{ decision === 'APPROVED' ? 'Confirmar aprobación' : 'Enviar solicitud de cambios' }}
               </app-primary-button>
             </div>
           </form>

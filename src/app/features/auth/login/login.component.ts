@@ -64,15 +64,17 @@ export class LoginComponent {
 
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
-        const user = this.authService.getCurrentUser();
-        if (user?.role === 'admin') {
+        const roleName = this.authService.getRoleName();
+        if (roleName === 'ADMIN') {
           this.router.navigate(['/admin/dashboard']);
+        } else if (roleName === 'CONSULTANT') {
+          this.router.navigate(['/dashboard']);
         } else {
           this.router.navigate(['/dashboard']);
         }
       },
       error: () => {
-        this.errorMessage = 'Credenciales inválidas. Intenta de nuevo.';
+        this.errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña.';
         this.isLoading = false;
       }
     });

@@ -7,7 +7,27 @@
   <div class="upload-main">
     <div class="card">
       <h1>Subir nueva etiqueta</h1>
-      <p class="subtitle">Sube tu etiqueta en formato PDF, PNG o JPG para que el equipo de Sialico la revise.</p>
+      <p class="subtitle">
+        Sube tu etiqueta en formato PDF, PNG, JPG, DOCX o TXT para que el equipo de Sialico la revise.
+      </p>
+
+      <!-- Indicador de pasos durante el envío -->
+      <div class="steps-progress" *ngIf="isSubmitting">
+        <div class="step-item" [class.active]="currentStep === 'uploading-doc'">
+          <div class="step-dot"></div>
+          <span>Subiendo archivo</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item" [class.active]="currentStep === 'creating-label' || currentStep === 'creating-version'">
+          <div class="step-dot"></div>
+          <span>Registrando versión</span>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step-item" [class.active]="currentStep === 'done'">
+          <div class="step-dot"></div>
+          <span>¡Listo!</span>
+        </div>
+      </div>
 
       <!-- Zona de drag & drop -->
       <div
@@ -22,11 +42,11 @@
         <input
           #fileInput
           type="file"
-          [accept]="'.pdf,.png,.jpg,.jpeg'"
+          accept=".pdf,.png,.jpg,.jpeg,.docx,.txt"
           (change)="onFileSelected($event)"
           style="display:none">
 
-        <!-- Sin archivo seleccionado -->
+        <!-- Sin archivo -->
         <div class="drop-zone__empty" *ngIf="!selectedFile">
           <div class="drop-icon">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -35,17 +55,19 @@
               <line x1="12" y1="3" x2="12" y2="15"></line>
             </svg>
           </div>
-          <p class="drop-text">Arrastra tu archivo aquí o <span class="link-text">selecciona desde tu equipo</span></p>
-          <p class="drop-hint">Formatos permitidos: {{ allowedLabel }} · Máx. 10 MB</p>
+          <p class="drop-text">
+            Arrastra tu archivo aquí o <span class="link-text">selecciona desde tu equipo</span>
+          </p>
+          <p class="drop-hint">Formatos: {{ allowedExtensions }} &middot; Máx. 20 MB</p>
         </div>
 
-        <!-- Preview de imagen -->
-        <div class="drop-zone__preview" *ngIf="selectedFile && previewUrl">
+        <!-- Preview imagen -->
+        <div class="drop-zone__preview" *ngIf="selectedFile && isImage && previewUrl">
           <img [src]="previewUrl" alt="Preview de etiqueta">
         </div>
 
-        <!-- Archivo PDF seleccionado (sin preview) -->
-        <div class="drop-zone__file" *ngIf="selectedFile && !previewUrl">
+        <!-- Archivo no-imagen -->
+        <div class="drop-zone__file" *ngIf="selectedFile && !isImage">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
             <polyline points="14 2 14 8 20 8"></polyline>
@@ -53,36 +75,43 @@
           <span class="file-name">{{ selectedFile.name }}</span>
           <span class="file-size">{{ formatSize(selectedFile.size) }}</span>
         </div>
-
       </div>
 
-      <!-- Botón cambiar/quitar archivo -->
-      <div class="file-actions" *ngIf="selectedFile">
-        <button class="btn-text-danger" (click)="removeFile()">✕ Quitar archivo</button>
-        <button class="btn-outline" (click)="fileInput.click()">Cambiar archivo</button>
+      <!-- Acciones de archivo -->
+      <div class="file-actions" *ngIf="selectedFile && !isSubmitting">
+        <button class="btn-text-danger" type="button" (click)="removeFile()">✕ Quitar archivo</button>
+        <button class="btn-outline"     type="button" (click)="fileInput.click()">Cambiar archivo</button>
       </div>
 
-      <!-- Notas opcionales -->
+      <!-- Formulario de notas -->
       <form [formGroup]="form" (ngSubmit)="submit()">
         <div class="form-group mt-4">
-          <label>Notas para el revisor (opcional)</label>
-          <textarea formControlName="notes" rows="3"
+          <label>Notas para el revisor <span class="optional">(opcional)</span></label>
+          <textarea
+            formControlName="notes"
+            rows="3"
             placeholder="Ej. Por favor revisar en particular la sección de ingredientes...">
           </textarea>
         </div>
 
-        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <div class="error-message" *ngIf="errorMessage">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          {{ errorMessage }}
+        </div>
 
         <div class="submit-area">
           <app-primary-button
             type="submit"
-            [disabled]="!selectedFile"
+            [disabled]="!selectedFile || isSubmitting"
             [loading]="isSubmitting">
-            Enviar etiqueta para revisión
+            {{ isSubmitting ? stepLabel : 'Enviar etiqueta para revisión' }}
           </app-primary-button>
         </div>
       </form>
-
     </div>
   </div>
 
@@ -102,7 +131,7 @@
           <div class="step-num">2</div>
           <div>
             <strong>Recibirás una notificación</strong>
-            <p>Te avisaremos cuando esté lista la revisión, ya sea aprobada o con comentarios.</p>
+            <p>Te avisaremos cuando esté lista, ya sea aprobada o con comentarios.</p>
           </div>
         </li>
         <li>
@@ -119,8 +148,9 @@
       <h3>Consejos</h3>
       <ul class="tips-list">
         <li>Envía archivos de alta resolución (mínimo 300 dpi).</li>
-        <li>Asegúrate que los textos sean legibles en el archivo.</li>
-        <li>Si tienes múltiples caras de la etiqueta, combínalas en un solo PDF.</li>
+        <li>Asegúrate de que los textos sean legibles.</li>
+        <li>Si tienes múltiples caras, combínalas en un solo PDF.</li>
+        <li>Los documentos Word (.docx) deben estar en su versión final.</li>
       </ul>
     </div>
   </div>
