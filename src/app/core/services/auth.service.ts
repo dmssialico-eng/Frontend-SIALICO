@@ -1,49 +1,19 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, of } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { tap, switchMap, catchError, filter, take } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { User, AuthResponse } from '../models/models';
-
-// ─────────────────────────────────────────────────────────────
-// MODO DESARROLLO — sin backend
-// Cambia DEV_MODE a false cuando el backend esté listo.
-// ─────────────────────────────────────────────────────────────
-const DEV_MODE = true;
-
-const MOCK_USERS: Record<string, { password: string; user: User }> = {
-  'usuario@empresa.com': {
-    password: 'user123',
-    user: {
-      id: 2,
-      email: 'usuario@empresa.com',
-      full_name: 'María López',
-      role: 'user',
-      company_name: 'Lácteos del Norte',
-      phone: '+52 222 000 0002',
-      is_active: true,
-    },
-  },
-  'admin@sialico.com': {
-    password: 'admin123',
-    user: {
-      id: 1,
-      email: 'admin@sialico.com',
-      full_name: 'Admin Sialico',
-      role: 'admin',
-      company_name: 'Sialico Food Safety',
-      phone: '+52 222 000 0001',
-      is_active: true,
-    },
-  },
-};
+import { User, AuthResponse, Role } from '../models/models';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
+
+  /** null = not refreshing; true = in progress; false = failed */
+  private refreshing$ = new BehaviorSubject<boolean | null>(null);
 
   constructor(private http: HttpClient, private router: Router) {
     const stored = localStorage.getItem('user');
@@ -56,40 +26,22 @@ export class AuthService {
     }
   }
 
-  login(credentials: { email: string; password: string }): Observable<any> {
-    if (DEV_MODE) {
-      return this.mockLogin(credentials);
-    }
-    return this.http.post<AuthResponse>(`${this.apiUrl}/login/`, credentials).pipe(
-      tap((res) => this.handleAuthSuccess(res))
-    );
+  login(credentials: { email: string; password: string }): Observable<AuthResponse> {
+    return this.http
+      .post<AuthResponse>(`${this.apiUrl}/login/`, credentials)
+      .pipe(tap((res) => this.handleAuthSuccess(res)));
   }
 
-  private mockLogin(credentials: { email: string; password: string }): Observable<any> {
-    const entry = MOCK_USERS[credentials.email.toLowerCase()];
-    if (!entry || entry.password !== credentials.password) {
-      return new Observable(observer => {
-        observer.error({ status: 401, message: 'Credenciales invalidas' });
-      });
-    }
-    const fakeToken = 'dev-token-' + Date.now();
-    localStorage.setItem('access_token', fakeToken);
-    localStorage.setItem('user', JSON.stringify(entry.user));
-    this.currentUserSubject.next(entry.user);
-    return of({ user: entry.user, access: fakeToken });
-  }
-
-  register(data: any): Observable<any> {
-    if (DEV_MODE) {
-      return of({ message: 'Registro simulado en modo dev' });
-    }
+  register(data: {
+    full_name: string;
+    email: string;
+    company_name: string;
+    password: string;
+  }): Observable<any> {
     return this.http.post(`${this.apiUrl}/register/`, data);
   }
 
   me(): Observable<User> {
-    if (DEV_MODE) {
-      return of(this.getCurrentUser() as User);
-    }
     return this.http.get<User>(`${this.apiUrl}/me/`).pipe(
       tap((user) => {
         this.currentUserSubject.next(user);
@@ -111,30 +63,83 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  isAdmin(): boolean {
-    return this.getCurrentUser()?.role === 'admin';
+  /** Devuelve el nombre del rol (siempre en mayúsculas, ej: 'ADMIN', 'CLIENT') */
+  getRoleName(): string {
+    const role = this.getCurrentUser()?.role;
+    if (!role) return '';
+    if (typeof role === 'string') return role;
+    return (role as Role)?.name ?? '';
   }
 
-  // Requerido por auth-token.interceptor.ts
+  isAdmin(): boolean {
+    return this.getRoleName() === 'ADMIN';
+  }
+
+  isConsultant(): boolean {
+    return this.getRoleName() === 'CONSULTANT';
+  }
+
+  isClient(): boolean {
+    return this.getRoleName() === 'CLIENT';
+  }
+
   getAccessToken(): string | null {
     return localStorage.getItem('access_token');
   }
 
-  // Alias por si se usa en otros lugares
+  getRefreshToken(): string | null {
+    return localStorage.getItem('refresh_token');
+  }
+
+  /** Alias para compatibilidad con código existente */
   getToken(): string | null {
     return this.getAccessToken();
   }
 
-  // Requerido por error.interceptor.ts
+  /** Attempts to refresh the access token using the stored refresh token.
+   *  Serializes concurrent calls so only one HTTP request is made. */
+  refreshAccessToken(): Observable<string> {
+    const refresh = this.getRefreshToken();
+    if (!refresh) return throwError(() => new Error('no_refresh_token'));
+
+    if (this.refreshing$.value === true) {
+      return this.refreshing$.pipe(
+        filter(v => v !== true),
+        take(1),
+        switchMap(success =>
+          success ? new Observable<string>(obs => { obs.next(this.getAccessToken()!); obs.complete(); })
+                  : throwError(() => new Error('refresh_failed'))
+        )
+      );
+    }
+
+    this.refreshing$.next(true);
+    return this.http.post<{ access: string }>(`${this.apiUrl}/refresh/`, { refresh }).pipe(
+      tap(res => {
+        localStorage.setItem('access_token', res.access);
+        this.refreshing$.next(false);
+      }),
+      switchMap(res => new Observable<string>(obs => { obs.next(res.access); obs.complete(); })),
+      catchError(err => {
+        this.refreshing$.next(false);
+        return throwError(() => err);
+      })
+    );
+  }
+
   clearSession(): void {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     this.currentUserSubject.next(null);
+    this.refreshing$.next(null);
   }
 
   private handleAuthSuccess(res: AuthResponse): void {
     localStorage.setItem('access_token', res.access);
+    if (res.refresh) {
+      localStorage.setItem('refresh_token', res.refresh);
+    }
     localStorage.setItem('user', JSON.stringify(res.user));
     this.currentUserSubject.next(res.user);
   }

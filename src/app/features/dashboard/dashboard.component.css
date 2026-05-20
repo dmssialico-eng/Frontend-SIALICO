@@ -188,3 +188,56 @@
   color: var(--text-muted);
   margin-bottom: 1rem;
 }
+
+/* ── Plan card ──────────────────────────────────────────────────────────── */
+.plan-card { margin-bottom: 1.25rem; }
+
+.plan-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 1.25rem;
+}
+.plan-header h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+
+.plan-status {
+  font-size: 0.7rem; font-weight: 700; padding: 0.2rem 0.55rem;
+  border-radius: 99px; text-transform: uppercase; letter-spacing: 0.04em;
+}
+.plan-status.active   { background: #d1fae5; color: #065f46; }
+.plan-status.pending  { background: #fef9c3; color: #854d0e; }
+.plan-status.expired,
+.plan-status.cancelled { background: #fee2e2; color: #991b1b; }
+
+.btn-link-sm { font-size: 0.8rem; font-weight: 500; color: var(--primary-blue); white-space: nowrap; }
+
+.limit-row { margin-bottom: 1rem; }
+.limit-labels {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 0.8rem; margin-bottom: 0.35rem; color: var(--text-muted);
+}
+
+.progress-track {
+  height: 6px; background: var(--soft-bg); border-radius: 99px; overflow: hidden;
+}
+.progress-fill {
+  height: 100%; background: var(--primary-blue); border-radius: 99px;
+  transition: width 0.4s ease;
+}
+.progress-fill.fill-warn   { background: #f59e0b; }
+.progress-fill.fill-danger { background: #ef4444; }
+
+.text-warn   { color: #b45309; font-weight: 600; }
+.text-danger { color: #dc2626; font-weight: 600; }
+
+.plan-note { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.75rem; }
+
+.limit-unlimited { font-size: 0.82rem; color: #059669; font-weight: 500; }
+
+.plan-card-empty { margin-bottom: 1.25rem; text-align: center; }
+.plan-card-empty h2 { font-size: 1rem; font-weight: 700; margin-bottom: 0.35rem; }
+.plan-card-empty p  { font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1rem; }
+.btn-upgrade {
+  display: inline-block; padding: 0.5rem 1rem; border-radius: 8px;
+  background: var(--primary-blue); color: white; font-size: 0.875rem;
+  font-weight: 600; text-decoration: none;
+}
+.btn-upgrade:hover { opacity: 0.9; }

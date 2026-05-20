@@ -1,0 +1,97 @@
+<div class="page-title">
+  <h1>Consultorías</h1>
+  <button class="btn-outline" *ngIf="view === 'list'" (click)="view = 'new'">
+    + Solicitar consultoría
+  </button>
+  <button class="btn-outline" *ngIf="view === 'new'" (click)="view = 'list'">
+    ← Volver
+  </button>
+</div>
+
+<!-- Mensaje de éxito -->
+<div class="success-banner" *ngIf="successMessage">
+  <span>✓</span> {{ successMessage }}
+</div>
+
+<!-- ── Lista de consultorías ─────────────────────────────────────────────── -->
+<ng-container *ngIf="view === 'list'">
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Cargando consultorías...</p>
+  </div>
+
+  <div *ngIf="!isLoading && consultations.length === 0" class="empty-state">
+    <div class="empty-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+    </div>
+    <h3>No tienes consultorías aún</h3>
+    <p>Solicita una consultoría con un especialista Sialico para guiarte en el proceso regulatorio.</p>
+    <button class="btn-primary mt-3" (click)="view = 'new'">Solicitar mi primera consultoría</button>
+  </div>
+
+  <div class="consultations-list" *ngIf="!isLoading && consultations.length > 0">
+    <div class="consultation-card card" *ngFor="let c of consultations">
+      <div class="card-header">
+        <div>
+          <h3>{{ c.topic }}</h3>
+          <p class="muted">{{ c.description }}</p>
+        </div>
+        <app-status-badge [status]="c.status" type="consultation"></app-status-badge>
+      </div>
+      <div class="card-footer">
+        <span class="date-info" *ngIf="c.scheduled_at">
+          📅 Agendada para: {{ c.scheduled_at | date:'d MMM yyyy, HH:mm' }}
+        </span>
+        <span class="date-info muted" *ngIf="!c.scheduled_at">
+          Fecha por confirmar
+        </span>
+      </div>
+    </div>
+  </div>
+
+</ng-container>
+
+<!-- ── Formulario nueva consultoría ──────────────────────────────────────── -->
+<ng-container *ngIf="view === 'new'">
+  <div class="card form-card">
+    <h2>Solicitar consultoría</h2>
+    <p class="muted">Un especialista Sialico se pondrá en contacto contigo para agendar la sesión.</p>
+
+    <form [formGroup]="form" (ngSubmit)="createConsultation()">
+      <div class="form-group mt-3">
+        <label>Tema de la consultoría *</label>
+        <input
+          type="text"
+          formControlName="topic"
+          placeholder="Ej. Requisitos NOM-051 para exportación a Estados Unidos">
+      </div>
+
+      <div class="form-group mt-3">
+        <label>Descripción *</label>
+        <textarea
+          formControlName="description"
+          rows="5"
+          placeholder="Describe tu situación actual, qué producto tienes, a qué mercado deseas exportar y tus dudas principales...">
+        </textarea>
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <div class="form-actions mt-4">
+        <app-primary-button
+          type="submit"
+          [loading]="isCreating"
+          [disabled]="form.invalid">
+          Enviar solicitud
+        </app-primary-button>
+        <button type="button" class="btn-outline" (click)="view = 'list'">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</ng-container>

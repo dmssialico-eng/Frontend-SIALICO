@@ -28,20 +28,22 @@ export const routes: Routes = [
     loadComponent: () => import('./features/onboarding/onboarding.component').then(m => m.OnboardingComponent)
   },
 
+  // ── Layout cliente ────────────────────────────────────────────────────────
   {
     path: '',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./layouts/dashboard-layout/dashboard-layout.component').then(m => m.DashboardLayoutComponent),
     children: [
-      { path: 'dashboard',    loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
-      { path: 'subscription', loadComponent: () => import('./features/subscription/subscription.component').then(m => m.SubscriptionComponent) },
-      { path: 'notifications', loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent) },
-      { path: 'support',       loadComponent: () => import('./features/support/support.component').then(m => m.SupportComponent) },
-      { path: 'guides',        loadComponent: () => import('./features/guides/guides-home/guides-home.component').then(m => m.GuidesHomeComponent) },
+      { path: 'dashboard',      loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'subscription',   loadComponent: () => import('./features/subscription/subscription.component').then(m => m.SubscriptionComponent) },
+      { path: 'notifications',  loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent) },
+      { path: 'support',        loadComponent: () => import('./features/support/support.component').then(m => m.SupportComponent) },
+      { path: 'guides',         loadComponent: () => import('./features/guides/guides-home/guides-home.component').then(m => m.GuidesHomeComponent) },
       { path: 'guides/introduction', loadComponent: () => import('./features/guides/introduction-guide/introduction-guide.component').then(m => m.IntroductionGuideComponent) },
       { path: 'guides/projects',     loadComponent: () => import('./features/guides/projects-guide/projects-guide.component').then(m => m.ProjectsGuideComponent) },
-      { path: 'profile',       loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
+      { path: 'profile',        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
+      { path: 'consultations',  loadComponent: () => import('./features/consultations/consultations.component').then(m => m.ConsultationsComponent) },
 
       // Proyectos
       { path: 'projects',      loadComponent: () => import('./features/projects/project-list/project-list.component').then(m => m.ProjectListComponent) },
@@ -66,12 +68,11 @@ export const routes: Routes = [
     ]
   },
 
+  // ── Layout administrador ─────────────────────────────────────────────────
   {
     path: 'admin',
-    canActivate: [authGuard],
-    // Descomentar cuando el backend devuelva role: 'admin' en el usuario:
-    // canActivate: [authGuard, roleGuard],
-    // data: { expectedRole: 'admin' },
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRole: 'ADMIN' },
     loadComponent: () =>
       import('./layouts/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     children: [
@@ -99,6 +100,14 @@ export const routes: Routes = [
       {
         path: 'users',
         loadComponent: () => import('./features/admin/admin-users/admin-users.component').then(m => m.AdminUsersComponent)
+      },
+      {
+        path: 'payments',
+        loadComponent: () => import('./features/admin/admin-payments/admin-payments.component').then(m => m.AdminPaymentsComponent)
+      },
+      {
+        path: 'audit',
+        loadComponent: () => import('./features/admin/admin-audit/admin-audit.component').then(m => m.AdminAuditComponent)
       },
     ]
   },

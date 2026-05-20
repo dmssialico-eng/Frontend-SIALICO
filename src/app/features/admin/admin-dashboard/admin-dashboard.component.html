@@ -65,7 +65,7 @@
         <span class="kpi-value">{{ stats?.pending_purchases ?? '—' }}</span>
         <span class="kpi-label">Compras pendientes</span>
       </div>
-      <a routerLink="/admin/purchases" class="kpi-link">Ver →</a>
+      <a routerLink="/admin/payments" class="kpi-link">Ver →</a>
     </div>
   </div>
 
@@ -91,9 +91,9 @@
         </thead>
         <tbody>
           <tr *ngFor="let label of recentLabels">
-            <td>{{ label.product_name || 'Producto #' + label.product }}</td>
-            <td>v{{ label.version }}</td>
-            <td><app-status-badge [status]="label.status" type="label"></app-status-badge></td>
+            <td>Producto #{{ label.product }}</td>
+            <td>v{{ label.current_version_number }}</td>
+            <td><app-status-badge [status]="label.current_status" type="label"></app-status-badge></td>
             <td><a [routerLink]="['/admin/labels', label.id]" class="link-small">Revisar →</a></td>
           </tr>
         </tbody>

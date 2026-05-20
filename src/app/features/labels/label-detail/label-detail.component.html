@@ -11,98 +11,121 @@
 
   <div class="detail-layout">
 
-    <!-- Columna principal: visor y retroalimentación -->
+    <!-- Columna principal -->
     <div class="main-col">
 
-      <div class="card viewer-card">
-        <div class="viewer-header">
-          <h2>Etiqueta — Versión {{ label.version }}</h2>
-          <app-status-badge [status]="label.status" type="label"></app-status-badge>
+      <!-- Estado actual -->
+      <div class="card status-card">
+        <div class="status-header">
+          <div>
+            <h2>Estado de la etiqueta</h2>
+            <p class="muted">Versión actual: {{ label.current_version_number }}</p>
+          </div>
+          <app-status-badge [status]="label.current_status" type="label"></app-status-badge>
         </div>
 
-        <div class="viewer-body" *ngIf="!isPdf">
-          <img [src]="label.file_url" alt="Etiqueta versión {{ label.version }}" class="label-img">
-        </div>
-
-        <div class="viewer-body pdf-viewer" *ngIf="isPdf">
-          <iframe [src]="label.file_url" width="100%" height="520" frameborder="0"></iframe>
-        </div>
-
-        <div class="viewer-footer">
-          <a [href]="label.file_url" target="_blank" class="btn-outline">
-            ↓ Descargar etiqueta original
-          </a>
-        </div>
-      </div>
-
-      <div class="card feedback-card" *ngIf="label.status === 'approved' || label.status === 'needs_changes'">
-        <div class="feedback-header" [ngClass]="'header-' + label.status">
-          <span class="feedback-icon">{{ statusIcon }}</span>
-          <h3 *ngIf="label.status === 'approved'">¡Etiqueta aprobada!</h3>
-          <h3 *ngIf="label.status === 'needs_changes'">Se requieren cambios</h3>
-        </div>
-
-        <div class="feedback-body">
-          <p *ngIf="label.feedback" class="feedback-text">{{ label.feedback }}</p>
-          <p *ngIf="!label.feedback" class="no-feedback">El revisor no dejó comentarios adicionales.</p>
-
-          <div class="feedback-file" *ngIf="label.feedback_file_url">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline>
-            </svg>
-            <a [href]="label.feedback_file_url" target="_blank">Descargar documento de retroalimentación</a>
+        <!-- Aprobada -->
+        <div class="feedback-banner approved" *ngIf="isApproved()">
+          <span class="banner-icon">✓</span>
+          <div>
+            <strong>¡Etiqueta aprobada!</strong>
+            <p>Tu etiqueta cumple con los requisitos regulatorios. Puedes proceder con tu proceso.</p>
           </div>
         </div>
 
-        <div class="feedback-actions" *ngIf="label.status === 'needs_changes'">
+        <!-- Requiere cambios -->
+        <div class="feedback-banner needs-changes" *ngIf="needsChanges()">
+          <span class="banner-icon">!</span>
+          <div>
+            <strong>Se requieren cambios</strong>
+            <p>El revisor dejó observaciones. Revisa el historial de versiones para ver el detalle.</p>
+          </div>
           <app-primary-button [routerLink]="newVersionRoute">
-            Subir nueva versión con cambios
+            Subir nueva versión
           </app-primary-button>
+        </div>
+
+        <!-- En revisión -->
+        <div class="feedback-banner in-review" *ngIf="isPending()">
+          <span class="banner-icon">…</span>
+          <div>
+            <strong>En revisión</strong>
+            <p>Tu etiqueta está siendo revisada por el equipo Sialico. Te notificaremos cuando esté lista.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Historial de versiones -->
+      <div class="card">
+        <h3 class="section-title">Historial de versiones</h3>
+
+        <div class="version-empty" *ngIf="versions.length === 0">
+          <p class="muted">No hay versiones registradas aún.</p>
+        </div>
+
+        <div class="versions-list" *ngIf="versions.length > 0">
+          <div
+            class="version-item"
+            [class.latest]="i === 0"
+            *ngFor="let v of versions; let i = index">
+
+            <div class="version-number">
+              <span class="v-badge">v{{ v.version_number }}</span>
+              <span class="v-latest" *ngIf="i === 0">Actual</span>
+            </div>
+
+            <div class="version-meta">
+              <span class="v-date">{{ v.submitted_at | date:'d MMM yyyy, HH:mm' }}</span>
+              <p class="v-notes" *ngIf="v.notes">{{ v.notes }}</p>
+            </div>
+
+            <div class="version-status">
+              <app-status-badge [status]="v.status" type="label"></app-status-badge>
+            </div>
+
+          </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Sidebar de info -->
+    <!-- Sidebar de acciones -->
     <div class="side-col">
-      <div class="card info-card">
-        <h3>Detalles de la revisión</h3>
-
-        <div class="info-row">
-          <span class="info-label">Estado</span>
-          <app-status-badge [status]="label.status" type="label"></app-status-badge>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Versión</span>
-          <span class="info-value">{{ label.version }}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Formato</span>
-          <span class="info-value">{{ label.file_type.toUpperCase() }}</span>
-        </div>
-        <div class="info-row">
-          <span class="info-label">Enviada el</span>
-          <span class="info-value">{{ label.submitted_at | date:'d MMM yyyy, HH:mm' }}</span>
-        </div>
-        <div class="info-row" *ngIf="label.reviewed_at">
-          <span class="info-label">Revisada el</span>
-          <span class="info-value">{{ label.reviewed_at | date:'d MMM yyyy, HH:mm' }}</span>
-        </div>
-        <div class="info-row" *ngIf="label.reviewer_name">
-          <span class="info-label">Revisada por</span>
-          <span class="info-value">{{ label.reviewer_name }}</span>
-        </div>
+      <div class="card actions-card">
+        <h3>Acciones</h3>
+        <app-primary-button
+          *ngIf="needsChanges()"
+          [routerLink]="newVersionRoute">
+          Subir nueva versión
+        </app-primary-button>
+        <a [routerLink]="newVersionRoute" class="btn-outline mt-2"
+           *ngIf="!needsChanges() && !isApproved()">
+          Subir nueva versión
+        </a>
       </div>
 
-      <div class="card pending-card" *ngIf="label.status === 'submitted' || label.status === 'in_review'">
-        <div class="pending-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
+      <div class="card info-card">
+        <h3>Detalles</h3>
+        <div class="info-row">
+          <span class="info-label">Estado actual</span>
+          <app-status-badge [status]="label.current_status" type="label"></app-status-badge>
         </div>
-        <p>Tu etiqueta está siendo revisada. Te notificaremos cuando esté lista.</p>
+        <div class="info-row">
+          <span class="info-label">Versión actual</span>
+          <span class="info-value">{{ label.current_version_number }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Total versiones</span>
+          <span class="info-value">{{ versions.length }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Creada el</span>
+          <span class="info-value">{{ label.created_at | date:'d MMM yyyy' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Última actualización</span>
+          <span class="info-value">{{ label.updated_at | date:'d MMM yyyy, HH:mm' }}</span>
+        </div>
       </div>
     </div>
 
