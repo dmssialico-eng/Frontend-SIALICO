@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { LucideAngularModule, Mail, Lock, Eye, EyeOff, AlertCircle, ShieldCheck, CheckCircle2, Globe2, Zap, Check, Info } from 'lucide-angular';
+import { LucideAngularModule } from 'lucide-angular';
 import { AuthService } from '../../../core/services/auth.service';
 import { SialicoLogoComponent } from '../../../shared/components/sialico-logo/sialico-logo.component';
 import { PrimaryButtonComponent } from '../../../shared/components/primary-button/primary-button.component';
@@ -34,18 +34,6 @@ export class LoginComponent {
     'Notificaciones automáticas de cambios',
   ];
 
-  readonly Mail         = Mail;
-  readonly Lock         = Lock;
-  readonly Eye          = Eye;
-  readonly EyeOff       = EyeOff;
-  readonly AlertCircle  = AlertCircle;
-  readonly ShieldCheck  = ShieldCheck;
-  readonly CheckCircle2 = CheckCircle2;
-  readonly Globe2       = Globe2;
-  readonly Zap          = Zap;
-  readonly Check        = Check;
-  readonly Info         = Info;
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -67,14 +55,16 @@ export class LoginComponent {
         const roleName = this.authService.getRoleName();
         if (roleName === 'ADMIN') {
           this.router.navigate(['/admin/dashboard']);
-        } else if (roleName === 'CONSULTANT') {
-          this.router.navigate(['/dashboard']);
         } else {
           this.router.navigate(['/dashboard']);
         }
       },
-      error: () => {
-        this.errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña.';
+      error: (err) => {
+        if (err.status === 401) {
+          this.errorMessage = 'Credenciales inválidas. Verifica tu correo y contraseña.';
+        } else {
+          this.errorMessage = 'Error de conexión. Intenta de nuevo más tarde.';
+        }
         this.isLoading = false;
       }
     });
