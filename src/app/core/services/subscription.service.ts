@@ -44,4 +44,8 @@ export class SubscriptionService {
       tap(sub => this._subscription$.next(sub))
     );
   }
+
+  clearCache(): void {
+  this._subscription$.next(null);
+}
 }
