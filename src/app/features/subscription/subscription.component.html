@@ -9,17 +9,20 @@
 </div>
 
 <div *ngIf="!isLoading">
+  <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+  <div *ngIf="errorMessage" class="alert alert-error">{{ errorMessage }}</div>
+
   <div class="current-plan-section">
     <div class="card plan-details-card">
       <div class="card-content">
         <h3>Plan actual - {{ currentSubscription?.plan?.name || 'Ninguno' }}</h3>
         <p class="renewal-date" *ngIf="currentSubscription?.end_date">Renueva: {{ currentSubscription?.end_date | date }}</p>
-        
+
         <ul class="plan-features mt-4">
           <li>Hasta {{ currentSubscription?.plan?.project_limit || '∞' }} proyectos activos</li>
           <li>Usuarios ilimitados</li>
           <li>Soporte prioritario</li>
-          <li>Espacios de almacenamiento extendido</li>
+          <li>Almacenamiento extendido</li>
         </ul>
       </div>
     </div>
@@ -29,43 +32,183 @@
         <span class="currency">$</span>
         <span class="amount">{{ currentSubscription?.plan?.price || '0' }}</span>
       </div>
-      <p class="billing-period">USD / año<br>IVA incluido</p>
-      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4">Ver facturación</app-primary-button>
+      <p class="billing-period">MXN / año<br>IVA incluido</p>
+      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4" (click)="viewBilling()">
+        {{ showBilling ? 'Ocultar facturación' : 'Ver facturación' }}
+      </app-primary-button>
     </div>
 
     <div class="card payment-status-card">
       <h3>Estado de pago</h3>
       <div class="status-item mt-4">
         <span class="label">Último pago</span>
-        <span class="value">Aprobado</span>
+        <span class="value">{{ lastConfirmedPayment ? 'Aprobado' : 'Sin registros' }}</span>
       </div>
       <div class="status-item">
         <span class="label">Próximo pago</span>
-        <span class="value">{{ currentSubscription?.end_date | date }}</span>
+        <span class="value">{{ currentSubscription?.end_date ? (currentSubscription?.end_date | date) : '—' }}</span>
       </div>
-      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4">Actualizar método</app-primary-button>
+      <app-primary-button [fullWidth]="true" variant="secondary" class="mt-4" (click)="openUpdatePayment()">Actualizar método</app-primary-button>
     </div>
   </div>
 
-  <h2 class="section-title mt-8">Cambiar de plan</h2>
-  
-  <div class="plans-grid">
-    <div class="plan-card" *ngFor="let plan of plans" [class.highlighted]="plan.name.toLowerCase().includes('pro')">
-      <div class="recommended-badge" *ngIf="plan.name.toLowerCase().includes('pro')">Recomendado</div>
-      <h3>{{ plan.name }}</h3>
-      <div class="price">${{ plan.price || '0' }} <span>/ año</span></div>
-      
-      <ul class="features">
-        <li>{{ plan.project_limit ? 'Hasta ' + plan.project_limit + ' proyectos' : 'Proyectos ilimitados' }}</li>
-        <li>Usuarios ilimitados</li>
-        <li>Soporte {{ plan.name.toLowerCase().includes('enterprise') ? 'dedicado' : 'prioritario' }}</li>
-      </ul>
-      
-      <app-primary-button 
-        [fullWidth]="true" 
-        [variant]="plan.name.toLowerCase().includes('pro') ? 'primary' : 'secondary'">
-        {{ plan.name.toLowerCase().includes('enterprise') ? 'Contactar asesor' : (currentSubscription?.plan?.id === plan.id ? 'Plan Actual' : 'Seleccionar') }}
-      </app-primary-button>
+  <!-- Billing history (toggled) -->
+  <div *ngIf="showBilling" class="section-block mt-8">
+    <h2 class="section-title">Historial de facturación</h2>
+    <div *ngIf="payments.length === 0" class="empty-plans">
+      <p>Sin pagos registrados aún.</p>
+    </div>
+    <div *ngIf="payments.length > 0" class="card table-wrapper">
+      <table class="payments-table">
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Concepto</th>
+            <th>Monto</th>
+            <th>Método</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of payments">
+            <td>{{ p.created_at | date:'dd/MM/yyyy' }}</td>
+            <td>{{ getConceptLabel(p.concept) }}</td>
+            <td>{{ formatCurrency(p.amount, p.currency) }}</td>
+            <td>{{ p.method }}</td>
+            <td>
+              <span class="status-chip"
+                [class.chip-confirmed]="p.status === 'CONFIRMED'"
+                [class.chip-pending]="p.status === 'PENDING'"
+                [class.chip-rejected]="p.status === 'REJECTED'">
+                {{ getPaymentStatusLabel(p.status) }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <h2 class="section-title mt-8">Elige un plan</h2>
+
+  <div class="plans-grid" [class.loading-plan]="isChangingPlan">
+    <ng-container *ngIf="plans.length > 0; else noPlans">
+      <div class="plan-card"
+        *ngFor="let plan of plans"
+        [class.highlighted]="plan.name.toLowerCase().includes('pro')">
+
+        <div class="recommended-badge" *ngIf="plan.name.toLowerCase().includes('pro') && currentSubscription?.plan?.id !== plan.id">
+          Recomendado
+        </div>
+        <div class="recommended-badge" *ngIf="currentSubscription?.plan?.id === plan.id">
+          Plan actual
+        </div>
+
+        <h3>{{ plan.name }}</h3>
+        <div class="price">
+          <span *ngIf="+plan.price === 0" class="price-free-note">Gratis</span>
+          <ng-container *ngIf="+plan.price > 0">${{ plan.price }} <span>/ año</span></ng-container>
+        </div>
+
+        <ul class="features">
+          <li>{{ plan.project_limit ? 'Hasta ' + plan.project_limit + ' proyectos' : 'Proyectos ilimitados' }}</li>
+          <li>{{ plan.product_limit_per_project ? 'Hasta ' + plan.product_limit_per_project + ' productos / proyecto' : 'Productos ilimitados' }}</li>
+          <li>Usuarios ilimitados</li>
+          <li>Soporte {{ plan.name.toLowerCase().includes('enterprise') ? 'dedicado 24/7' : 'prioritario' }}</li>
+          <li *ngIf="plan.monthly_review_limit && plan.monthly_review_limit > 0">
+            {{ plan.monthly_review_limit }} revisiones / mes
+          </li>
+        </ul>
+
+        <app-primary-button
+          [fullWidth]="true"
+          [variant]="plan.name.toLowerCase().includes('pro') ? 'primary' : 'secondary'"
+          [disabled]="currentSubscription?.plan?.id === plan.id || isChangingPlan"
+          (click)="plan.name.toLowerCase().includes('enterprise') ? contactAdvisor() : requestPlanChange(plan)">
+          <span *ngIf="isChangingPlan && pendingPlan?.id === plan.id">Procesando...</span>
+          <span *ngIf="!(isChangingPlan && pendingPlan?.id === plan.id)">
+            {{ plan.name.toLowerCase().includes('enterprise')
+              ? 'Contactar asesor'
+              : (currentSubscription?.plan?.id === plan.id ? 'Plan Actual' : 'Seleccionar') }}
+          </span>
+        </app-primary-button>
+      </div>
+    </ng-container>
+    <ng-template #noPlans>
+      <div class="empty-plans">
+        <p>No hay planes disponibles en este momento. Contacta a soporte.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>
+
+<!-- Confirmation modal -->
+<div class="modal-overlay" *ngIf="showConfirmModal" (click)="cancelPlanChange()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Confirmar cambio de plan</h3>
+    <p>Estás a punto de {{ currentSubscription ? 'cambiar' : 'activar' }} tu plan a:</p>
+    <div class="modal-plan-summary">
+      <div class="modal-plan-row">
+        <span>Plan</span>
+        <strong>{{ pendingPlan?.name }}</strong>
+      </div>
+      <div class="modal-plan-row">
+        <span>Precio</span>
+        <strong>{{ +pendingPlan?.price! === 0 ? 'Gratis' : '$' + pendingPlan?.price + ' MXN / año' }}</strong>
+      </div>
+    </div>
+    <p class="modal-note">El cambio se aplica de inmediato. Nos pondremos en contacto contigo para gestionar el pago si aplica.</p>
+    <div class="modal-actions">
+      <app-primary-button variant="secondary" (click)="cancelPlanChange()">Cancelar</app-primary-button>
+      <app-primary-button (click)="confirmPlanChange()">Confirmar</app-primary-button>
+    </div>
+  </div>
+</div>
+
+<!-- Update payment method modal -->
+<div class="modal-overlay" *ngIf="showUpdatePaymentModal" (click)="showUpdatePaymentModal = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Actualizar método de pago</h3>
+    <p>Para actualizar o cambiar tu método de pago, contacta a nuestro equipo:</p>
+    <div class="modal-plan-summary">
+      <div class="modal-plan-row">
+        <span>Correo</span>
+        <strong>soporte&#64;sialico.mx</strong>
+      </div>
+      <div class="modal-plan-row">
+        <span>Horario</span>
+        <strong>Lun–Vie 9:00–18:00 CST</strong>
+      </div>
+    </div>
+    <p class="modal-note">Te atenderemos en un plazo máximo de 24 horas hábiles.</p>
+    <div class="modal-actions">
+      <app-primary-button (click)="showUpdatePaymentModal = false">Entendido</app-primary-button>
+    </div>
+  </div>
+</div>
+
+<!-- Contact advisor modal -->
+<div class="modal-overlay" *ngIf="showAdvisorModal" (click)="showAdvisorModal = false">
+  <div class="modal" (click)="$event.stopPropagation()">
+    <h3>Plan Enterprise</h3>
+    <p>El plan Enterprise está diseñado para organizaciones con necesidades avanzadas. Un asesor te contactará para personalizar tu propuesta.</p>
+    <div class="modal-plan-summary">
+      <div class="modal-plan-row">
+        <span>Correo</span>
+        <strong>ventas&#64;sialico.mx</strong>
+      </div>
+      <div class="modal-plan-row">
+        <span>Proyectos</span>
+        <strong>Ilimitados</strong>
+      </div>
+      <div class="modal-plan-row">
+        <span>Soporte</span>
+        <strong>Dedicado 24/7</strong>
+      </div>
+    </div>
+    <p class="modal-note">También puedes escribirnos directamente para agendar una llamada de descubrimiento.</p>
+    <div class="modal-actions">
+      <app-primary-button (click)="showAdvisorModal = false">Cerrar</app-primary-button>
     </div>
   </div>
 </div>

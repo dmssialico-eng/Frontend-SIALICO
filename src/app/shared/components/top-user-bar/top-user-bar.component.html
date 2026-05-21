@@ -2,15 +2,17 @@
   <div class="breadcrumb">
     <!-- Optional Breadcrumb could go here -->
   </div>
-  
+
   <div class="user-info">
     <div class="company-details" *ngIf="user">
       <span class="company-name">Empresa Activa: {{ user.company_name }}</span>
-      <span class="plan-badge" *ngIf="subscription">{{ subscription.plan.name }} activo</span>
-      <span class="plan-badge" *ngIf="!subscription">Sin plan activo</span>
+      <span class="plan-badge" [ngClass]="planBadgeClass" *ngIf="subscription">
+        {{ subscription.plan.name }} activo
+      </span>
+      <span class="plan-badge badge-none" *ngIf="!subscription">Sin plan activo</span>
     </div>
-    
-    <div class="avatar">
+
+    <div class="avatar" [ngClass]="planBadgeClass">
       {{ userInitials }}
     </div>
   </div>

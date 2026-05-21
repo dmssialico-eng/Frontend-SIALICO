@@ -23,12 +23,37 @@
 }
 .plan-badge {
   font-size: 0.75rem;
-  color: var(--primary-blue);
-  background-color: rgba(20, 99, 255, 0.1);
   padding: 0.1rem 0.5rem;
   border-radius: 9999px;
   margin-top: 0.25rem;
+  font-weight: 500;
+  transition: background-color 0.3s, color 0.3s;
 }
+
+/* Sin plan */
+.badge-none {
+  color: #6b7280;
+  background-color: #f3f4f6;
+}
+
+/* Básico */
+.badge-basic {
+  color: var(--primary-blue);
+  background-color: rgba(20, 99, 255, 0.1);
+}
+
+/* Profesional */
+.badge-pro {
+  color: #7c3aed;
+  background-color: rgba(124, 58, 237, 0.1);
+}
+
+/* Enterprise */
+.badge-enterprise {
+  color: #92400e;
+  background-color: rgba(245, 158, 11, 0.15);
+}
+
 .avatar {
   width: 40px;
   height: 40px;
@@ -40,4 +65,9 @@
   justify-content: center;
   font-weight: 600;
   letter-spacing: 1px;
+  transition: background-color 0.3s;
 }
+
+/* Avatar color matches plan */
+.avatar.badge-pro        { background-color: #7c3aed; }
+.avatar.badge-enterprise { background-color: #d97706; }

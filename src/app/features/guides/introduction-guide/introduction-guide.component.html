@@ -1,37 +1,136 @@
 <div class="guide-page">
-      <a routerLink="/guides" class="back-link">&larr; Volver a Guías</a>
-      
-      <div class="guide-content card">
-        <h1>Introducción a la plataforma</h1>
-        
-        <div class="section">
-          <h2>¿Qué es Sialico Avanz?</h2>
-          <p>Sialico Avanz es una plataforma regulatoria inteligente diseñada para digitalizar, automatizar y gestionar procesos de cumplimiento para empresas de alimentos, suplementos, cosméticos y productos regulados.</p>
-        </div>
+  <a routerLink="/guides" class="back-link">&larr; Volver a Guías</a>
 
-        <div class="section">
-          <h2>¿Para qué puedo usar la plataforma?</h2>
-          <ul>
-            <li>Registrar y gestionar trámites regulatorios</li>
-            <li>Organizar documentación técnica y sanitaria</li>
-            <li>Subir evidencia para auditorías</li>
-            <li>Descargar plantillas reguladoras por país</li>
-            <li>Controlar proyectos y equipos</li>
-            <li>Automatizar procesos con IA</li>
-            <li>Gestionar fechas de vencimiento y alertas</li>
-          </ul>
-        </div>
+  <div class="guide-content card">
+    <h1>Introducción a la plataforma</h1>
 
-        <div class="section">
-          <h2>Estructura de la plataforma</h2>
-          <div class="structure-grid">
-            <div class="structure-item"><strong>Dashboard:</strong> Resumen principal de actividad.</div>
-            <div class="structure-item"><strong>Proyectos:</strong> Gestión de normativas y procesos.</div>
-            <div class="structure-item"><strong>Notificaciones:</strong> Avisos de vencimientos.</div>
-            <div class="structure-item"><strong>Soporte:</strong> Ayuda directa del equipo Sialico.</div>
-            <div class="structure-item"><strong>Guías:</strong> Documentación y manuales.</div>
-            <div class="structure-item"><strong>Perfil:</strong> Gestión de empresas y usuarios.</div>
+    <div class="section">
+      <h2>¿Qué es SIALICO?</h2>
+      <p>SIALICO es una plataforma de cumplimiento regulatorio diseñada para empresas que comercializan
+        alimentos, suplementos, cosméticos y productos de consumo regulados. Centraliza la gestión de
+        etiquetas, la comunicación con revisores expertos y el seguimiento de tus trámites, todo en un
+        solo lugar.</p>
+    </div>
+
+    <div class="section">
+      <h2>¿Cómo funciona el proceso de revisión de etiquetas?</h2>
+      <p>El flujo central de la plataforma es el siguiente:</p>
+
+      <div class="flow-steps">
+        <div class="flow-step">
+          <div class="step-number">1</div>
+          <div class="step-body">
+            <strong>Crea un proyecto</strong>
+            <span>Agrupa tus productos bajo un nombre de proyecto (p. ej. "Lanzamiento Q1 2025").</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-number">2</div>
+          <div class="step-body">
+            <strong>Agrega un producto</strong>
+            <span>Registra el producto con su nombre, categoría y país de destino.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-number">3</div>
+          <div class="step-body">
+            <strong>Sube tu etiqueta</strong>
+            <span>Adjunta el archivo (PDF, PNG, JPG, DOCX) que necesitas revisar. Puedes incluir notas para el revisor.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-number">4</div>
+          <div class="step-body">
+            <strong>Revisión por expertos</strong>
+            <span>Un especialista regulatorio de SIALICO revisa tu etiqueta contra la normativa vigente.</span>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-number">5</div>
+          <div class="step-body">
+            <strong>Respuesta y correcciones</strong>
+            <span>Recibes aprobación o una lista de cambios requeridos con observaciones detalladas. Si hay cambios, subes una nueva versión.</span>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="section">
+      <h2>Estados de una etiqueta</h2>
+      <div class="status-grid">
+        <div class="status-item-card">
+          <span class="badge badge-draft">Borrador</span>
+          <p>Etiqueta creada pero aún no enviada a revisión.</p>
+        </div>
+        <div class="status-item-card">
+          <span class="badge badge-submitted">Enviada</span>
+          <p>La etiqueta fue enviada y espera ser asignada a un revisor.</p>
+        </div>
+        <div class="status-item-card">
+          <span class="badge badge-review">En revisión</span>
+          <p>Un especialista está analizando tu etiqueta actualmente.</p>
+        </div>
+        <div class="status-item-card">
+          <span class="badge badge-approved">Aprobada</span>
+          <p>La etiqueta cumple con la normativa. Puedes proceder con tu trámite.</p>
+        </div>
+        <div class="status-item-card">
+          <span class="badge badge-changes">Cambios requeridos</span>
+          <p>El revisor encontró observaciones. Debes corregir y subir una nueva versión.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Módulos de la plataforma</h2>
+      <div class="structure-grid">
+        <div class="structure-item">
+          <strong>Dashboard</strong>
+          Resumen de proyectos activos, revisiones del mes y notificaciones recientes.
+        </div>
+        <div class="structure-item">
+          <strong>Proyectos</strong>
+          Gestiona todos tus proyectos y productos con sus etiquetas asociadas.
+        </div>
+        <div class="structure-item">
+          <strong>Notificaciones</strong>
+          Recibe alertas cuando una etiqueta sea aprobada, requiera cambios o haya novedades en tus tickets.
+        </div>
+        <div class="structure-item">
+          <strong>Soporte</strong>
+          Abre tickets para comunicarte directamente con el equipo SIALICO.
+        </div>
+        <div class="structure-item">
+          <strong>Consultorías</strong>
+          Solicita asesoría regulatoria especializada para situaciones complejas.
+        </div>
+        <div class="structure-item">
+          <strong>Suscripción</strong>
+          Consulta tu plan, historial de pagos y límites de revisiones del mes.
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Preguntas frecuentes</h2>
+
+      <div class="faq-item">
+        <strong>¿Cuánto tarda la revisión de una etiqueta?</strong>
+        <p>Normalmente entre 1 y 3 días hábiles. El tiempo puede variar según la complejidad del producto y la carga de trabajo.</p>
+      </div>
+      <div class="faq-item">
+        <strong>¿Puedo subir múltiples versiones de la misma etiqueta?</strong>
+        <p>Sí. Cada vez que apliques correcciones puedes subir una nueva versión. El historial completo de versiones queda guardado.</p>
+      </div>
+      <div class="faq-item">
+        <strong>¿Qué formatos de archivo son aceptados?</strong>
+        <p>PDF, PNG, JPG/JPEG, DOCX y TXT. El tamaño máximo por archivo es 20 MB.</p>
+      </div>
+      <div class="faq-item">
+        <strong>¿Qué pasa cuando llego al límite de revisiones de mi plan?</strong>
+        <p>Recibirás una alerta en el dashboard. Puedes adquirir revisiones adicionales o cambiar de plan en la sección de Suscripción.</p>
+      </div>
+    </div>
+
+  </div>
+</div>

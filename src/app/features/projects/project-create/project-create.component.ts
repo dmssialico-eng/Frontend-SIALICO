@@ -53,7 +53,12 @@ export class ProjectCreateComponent {
       error: (err) => {
         this.isSubmitting = false;
         if (err.status === 403) {
-          this.errorMessage = 'Has alcanzado el límite de proyectos de tu plan actual.';
+          const detail = err.error?.detail ?? '';
+          if (detail.toLowerCase().includes('limit') || detail.toLowerCase().includes('límite')) {
+            this.errorMessage = 'Has alcanzado el límite de proyectos de tu plan actual.';
+          } else {
+            this.errorMessage = 'No tienes permiso para crear proyectos. Verifica que tu suscripción esté activa o contacta a soporte.';
+          }
         } else {
           this.errorMessage = 'Hubo un error al crear el proyecto. Verifica los datos.';
         }
