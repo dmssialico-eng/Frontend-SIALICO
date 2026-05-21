@@ -4,10 +4,13 @@
 </div>
 
 <div class="guides-grid">
-  <!-- Tutorial Cards -->
   <div class="guide-card">
     <div class="icon-circle bg-blue">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="16" x2="12" y2="12"></line>
+        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+      </svg>
     </div>
     <h3>Introducción a la plataforma</h3>
     <p>Aprende los conceptos básicos y cómo navegar por todas las funcionalidades de Sialico.</p>
@@ -16,7 +19,9 @@
 
   <div class="guide-card">
     <div class="icon-circle bg-indigo">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+      </svg>
     </div>
     <h3>Gestión de proyectos</h3>
     <p>Descubre cómo crear, organizar y gestionar proyectos de manera eficiente con tu equipo.</p>
@@ -25,7 +30,12 @@
 
   <div class="guide-card">
     <div class="icon-circle bg-pink">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
     </div>
     <h3>Colaboración en equipo</h3>
     <p>Maximiza la productividad aprendiendo a colaborar eficientemente con tus compañeros.</p>
@@ -36,30 +46,59 @@
 <h2 class="section-title">Checklists</h2>
 
 <div class="checklists-grid">
-  <div class="checklist-card">
-    <h3>Inicio de proyecto</h3>
+  <div class="checklist-card" *ngFor="let cl of checklists">
+    <h3>{{ cl.title }}</h3>
     <ul>
-      <li>Definir objetivos y alcance</li>
-      <li>Asignar roles y responsabilidades</li>
+      <li *ngFor="let item of cl.preview">{{ item }}</li>
     </ul>
-    <button class="btn-text">Ver checklist</button>
+    <button class="btn-text" (click)="openChecklist(cl)">
+      Ver checklist &rarr;
+    </button>
   </div>
+</div>
 
-  <div class="checklist-card">
-    <h3>Cierre de sprint</h3>
-    <ul>
-      <li>Revisar tareas completadas</li>
-      <li>Documentar aprendizajes clave</li>
-    </ul>
-    <button class="btn-text">Ver checklist</button>
-  </div>
+<div class="modal-overlay" *ngIf="activeChecklist" (click)="onOverlayClick($event)">
+  <div class="modal-panel">
 
-  <div class="checklist-card">
-    <h3>Onboarding de equipo</h3>
-    <ul>
-      <li>Configurar accesos y permisos</li>
-      <li>Presentar herramientas y procesos</li>
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">{{ activeChecklist.title }}</h2>
+        <p class="modal-subtitle">{{ completedCount }} de {{ totalCount }} completados</p>
+      </div>
+      <button class="modal-close" (click)="closeChecklist()" aria-label="Cerrar">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" [style.width.%]="progressPercent"></div>
+      </div>
+      <span class="progress-label">{{ progressPercent }}%</span>
+    </div>
+
+    <ul class="modal-items">
+      <li
+        *ngFor="let item of activeChecklist.items; let i = index"
+        class="modal-item"
+        [class.done]="item.done"
+        (click)="toggleItem(i)"
+      >
+        <span class="item-checkbox">
+          <svg *ngIf="item.done" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </span>
+        <span class="item-text">{{ item.text }}</span>
+      </li>
     </ul>
-    <button class="btn-text">Ver checklist</button>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" (click)="closeChecklist()">Cerrar</button>
+    </div>
+
   </div>
 </div>
