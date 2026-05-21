@@ -15,7 +15,7 @@ import {
   ArrowLeft, ArrowRight, Search, Filter, X, RefreshCw,
   CheckCircle, XCircle, Clock, AlertTriangle, Star, Send,
   Paperclip, ExternalLink, Copy, Menu, Home, BookOpen,
-  HelpCircle, Layers, Activity
+  HelpCircle, Layers, Activity, Briefcase
 } from 'lucide-angular';
 
 export const appConfig: ApplicationConfig = {
@@ -35,7 +35,7 @@ export const appConfig: ApplicationConfig = {
         ArrowLeft, ArrowRight, Search, Filter, X, RefreshCw,
         CheckCircle, XCircle, Clock, AlertTriangle, Star, Send,
         Paperclip, ExternalLink, Copy, Menu, Home, BookOpen,
-        HelpCircle, Layers, Activity
+        HelpCircle, Layers, Activity, Briefcase
       })
     ),
   ]

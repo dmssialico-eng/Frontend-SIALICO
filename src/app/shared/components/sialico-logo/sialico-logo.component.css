@@ -3,8 +3,20 @@
   align-items: center;
 }
 
-.logo-img {
-  height: 140px;
+.logo--sm .logo-img {
+  height: 180px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo--md .logo-img {
+  height: 180px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo--lg .logo-img {
+  height: 250px;
   width: auto;
   object-fit: contain;
 }
