@@ -5,11 +5,12 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { SialicoLogoComponent } from '../../../shared/components/sialico-logo/sialico-logo.component';
 import { PrimaryButtonComponent } from '../../../shared/components/primary-button/primary-button.component';
+import { LucideAngularModule } from 'lucide-angular';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, SialicoLogoComponent, PrimaryButtonComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SialicoLogoComponent, PrimaryButtonComponent, LucideAngularModule],
   templateUrl: './register.component.html',
   styleUrls: ['../login/login.component.css'] // reuse login layout styles
 })

@@ -5,9 +5,7 @@ import { map, tap } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { Plan, Subscription, Payment } from '../models/models';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class SubscriptionService {
   private apiUrl = environment.apiUrl;
 

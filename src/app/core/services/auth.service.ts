@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { tap, switchMap, catchError, filter, take } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { User, AuthResponse, Role } from '../models/models';
+import { SubscriptionService } from './subscription.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -12,10 +13,13 @@ export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   currentUser$ = this.currentUserSubject.asObservable();
 
-  /** null = not refreshing; true = in progress; false = failed */
   private refreshing$ = new BehaviorSubject<boolean | null>(null);
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private subscriptionService: SubscriptionService
+  ) {
     const stored = localStorage.getItem('user');
     if (stored) {
       try {
@@ -63,7 +67,6 @@ export class AuthService {
     return this.currentUserSubject.value;
   }
 
-  /** Devuelve el nombre del rol (siempre en mayúsculas, ej: 'ADMIN', 'CLIENT') */
   getRoleName(): string {
     const role = this.getCurrentUser()?.role;
     if (!role) return '';
@@ -71,33 +74,14 @@ export class AuthService {
     return (role as Role)?.name ?? '';
   }
 
-  isAdmin(): boolean {
-    return this.getRoleName() === 'ADMIN';
-  }
+  isAdmin(): boolean { return this.getRoleName() === 'ADMIN'; }
+  isConsultant(): boolean { return this.getRoleName() === 'CONSULTANT'; }
+  isClient(): boolean { return this.getRoleName() === 'CLIENT'; }
 
-  isConsultant(): boolean {
-    return this.getRoleName() === 'CONSULTANT';
-  }
+  getAccessToken(): string | null { return localStorage.getItem('access_token'); }
+  getRefreshToken(): string | null { return localStorage.getItem('refresh_token'); }
+  getToken(): string | null { return this.getAccessToken(); }
 
-  isClient(): boolean {
-    return this.getRoleName() === 'CLIENT';
-  }
-
-  getAccessToken(): string | null {
-    return localStorage.getItem('access_token');
-  }
-
-  getRefreshToken(): string | null {
-    return localStorage.getItem('refresh_token');
-  }
-
-  /** Alias para compatibilidad con código existente */
-  getToken(): string | null {
-    return this.getAccessToken();
-  }
-
-  /** Attempts to refresh the access token using the stored refresh token.
-   *  Serializes concurrent calls so only one HTTP request is made. */
   refreshAccessToken(): Observable<string> {
     const refresh = this.getRefreshToken();
     if (!refresh) return throwError(() => new Error('no_refresh_token'));
@@ -107,8 +91,9 @@ export class AuthService {
         filter(v => v !== true),
         take(1),
         switchMap(success =>
-          success ? new Observable<string>(obs => { obs.next(this.getAccessToken()!); obs.complete(); })
-                  : throwError(() => new Error('refresh_failed'))
+          success
+            ? new Observable<string>(obs => { obs.next(this.getAccessToken()!); obs.complete(); })
+            : throwError(() => new Error('refresh_failed'))
         )
       );
     }
@@ -133,6 +118,7 @@ export class AuthService {
     localStorage.removeItem('user');
     this.currentUserSubject.next(null);
     this.refreshing$.next(null);
+    this.subscriptionService.clearCache();
   }
 
   private handleAuthSuccess(res: AuthResponse): void {
@@ -142,5 +128,6 @@ export class AuthService {
     }
     localStorage.setItem('user', JSON.stringify(res.user));
     this.currentUserSubject.next(res.user);
+    this.subscriptionService.clearCache();
   }
 }

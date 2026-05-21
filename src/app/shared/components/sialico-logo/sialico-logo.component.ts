@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,4 +8,6 @@ import { CommonModule } from '@angular/common';
   templateUrl: './sialico-logo.component.html',
   styleUrls: ['./sialico-logo.component.css']
 })
-export class SialicoLogoComponent {}
+export class SialicoLogoComponent {
+  @Input() size: 'sm' | 'md' | 'lg' = 'md';
+}

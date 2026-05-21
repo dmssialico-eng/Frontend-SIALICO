@@ -6,7 +6,7 @@
 <div class="profile-grid" *ngIf="user">
 
   <div class="card profile-card">
-    <h2>Datos Personales</h2>
+    <h2>Datos personales</h2>
 
     <div class="avatar-section">
       <div class="avatar-large">{{ user.full_name.charAt(0) || 'U' }}</div>
@@ -32,8 +32,78 @@
 
       <div class="form-group">
         <label>Teléfono</label>
-        <input type="tel" formControlName="phone" placeholder="+52 222 000 0000">
+
+        <div class="phone-row" [class.error]="phoneError">
+
+          <div class="lada-wrapper" (click)="toggleDropdown($event)" [class.open]="showLadaDropdown">
+            <span class="lada-flag">{{ selectedCountry.flag }}</span>
+            <span class="lada-code">{{ selectedCountry.code }}</span>
+            <svg class="lada-chevron" width="14" height="14" viewBox="0 0 24 24"
+                 fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <input
+            type="tel"
+            class="phone-input"
+            [value]="maskedPhone"
+            placeholder="000 000 0000"
+            maxlength="12"
+            autocomplete="tel-national"
+            (keydown)="onPhoneKeydown($event)"
+            (input)="onPhoneInput($event)"
+            (blur)="profileForm.get('phone')!.markAsTouched()"
+          >
+        </div>
+
+        <div class="phone-error" *ngIf="phoneError">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="2.5">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          {{ phoneError }}
+        </div>
+
+        <small class="field-hint" *ngIf="!phoneError">
+          Selecciona el lada e ingresa 10 dígitos.
+        </small>
       </div>
+
+      <div class="lada-dropdown"
+           *ngIf="showLadaDropdown"
+           [style.top.px]="dropdownTop"
+           [style.left.px]="dropdownLeft">
+        <div class="lada-search-wrap">
+          <input
+            id="lada-search"
+            type="text"
+            class="lada-search"
+            placeholder="Buscar país o código..."
+            [(ngModel)]="ladaSearch"
+            [ngModelOptions]="{standalone: true}"
+            (click)="$event.stopPropagation()"
+          >
+        </div>
+        <ul class="lada-list">
+          <li
+            *ngFor="let c of filteredCountries"
+            class="lada-option"
+            [class.selected]="c.code === selectedCountry.code && c.name === selectedCountry.name"
+            (click)="selectCountry(c); $event.stopPropagation()"
+          >
+            <span class="lada-opt-flag">{{ c.flag }}</span>
+            <span class="lada-opt-name">{{ c.name }}</span>
+            <span class="lada-opt-code">{{ c.code }}</span>
+          </li>
+          <li *ngIf="filteredCountries.length === 0" class="lada-empty">
+            Sin resultados.
+          </li>
+        </ul>
+      </div>
+      <div class="lada-backdrop" *ngIf="showLadaDropdown" (click)="closeDropdown()"></div>
 
       <div class="feedback-message success" *ngIf="successMessage">{{ successMessage }}</div>
       <div class="feedback-message error"   *ngIf="errorMessage">{{ errorMessage }}</div>
