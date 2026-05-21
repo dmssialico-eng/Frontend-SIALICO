@@ -78,7 +78,7 @@
     <div class="card plan-card" *ngIf="subscription">
       <div class="plan-header">
         <div>
-          <h2>{{ subscription.plan?.name || 'Sin plan' }}</h2>
+          <h2>{{ subscription.plan.name || 'Sin plan' }}</h2>
           <span class="plan-status" [ngClass]="subscription.status.toLowerCase()">
             {{ subscription.status }}
           </span>

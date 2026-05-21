@@ -18,26 +18,6 @@
         <a routerLink="/register" class="tab">Crear cuenta</a>
       </div>
 
-      <!-- Credenciales de desarrollo visibles -->
-      <div class="dev-hint">
-        <div class="dev-hint__header">
-          <i-lucide name="info" [size]="14"></i-lucide>
-          Modo desarrollo — credenciales de prueba
-        </div>
-        <div class="dev-hint__creds">
-          <div class="cred-row">
-            <span class="cred-role">Usuario</span>
-            <code>usuario&#64;empresa.com</code>
-            <code>user123</code>
-          </div>
-          <div class="cred-row">
-            <span class="cred-role admin">Admin</span>
-            <code>admin&#64;sialico.com</code>
-            <code>admin123</code>
-          </div>
-        </div>
-      </div>
-
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
 
         <div class="form-group">

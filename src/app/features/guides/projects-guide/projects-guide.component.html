@@ -1,49 +1,109 @@
 <div class="guide-page">
-      <a routerLink="/guides" class="back-link">&larr; Volver a Guías</a>
-      
-      <div class="guide-content card">
-        <h1>Gestión de proyectos</h1>
-        <p class="subtitle">Aprende a crear, organizar y gestionar proyectos de forma correcta.</p>
-        
-        <div class="section">
-          <h2>¿Qué puedes hacer en Proyectos?</h2>
-          <ul>
-            <li>Crear proyectos</li>
-            <li>Organizar tareas y responsables</li>
-            <li>Subir documentos y evidencia</li>
-          </ul>
-        </div>
+  <a routerLink="/guides" class="back-link">&larr; Volver a Guías</a>
 
-        <div class="features-grid">
-          <div class="feature-card">
-            <h3>Tareas</h3>
-            <p>Administra tus pendientes.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Documentos</h3>
-            <p>Plantillas y archivos.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Evidencia</h3>
-            <p>Fotos y PDF.</p>
-          </div>
-          <div class="feature-card">
-            <h3>Alertas</h3>
-            <p>Recibe avisos y notificaciones.</p>
-          </div>
-        </div>
+  <div class="guide-content card">
+    <h1>Gestión de proyectos y etiquetas</h1>
+    <p class="subtitle">Aprende a organizar tus productos y gestionar el ciclo de revisión de etiquetas paso a paso.</p>
 
-        <div class="section" style="margin-top: 3rem;">
-          <h2>Flujo de trabajo</h2>
-          <ol class="workflow">
-            <li>Elegir tipo de proyecto</li>
-            <li>Completar datos básicos</li>
-            <li>Asignar equipo</li>
-          </ol>
-          
-          <div style="margin-top: 2rem;">
-            <button class="btn btn-primary" routerLink="/projects/new">Crear mi primer proyecto</button>
-          </div>
+    <div class="section">
+      <h2>¿Qué es un proyecto?</h2>
+      <p>Un proyecto es el contenedor principal que agrupa uno o varios productos. Puedes pensar en él como una
+        carpeta que representa un objetivo de negocio: un lanzamiento, una línea de productos o un mercado destino.</p>
+      <p>Cada proyecto puede estar en uno de estos estados:</p>
+      <ul>
+        <li><strong>Activo</strong> — Estás trabajando activamente en él.</li>
+        <li><strong>Pausado</strong> — Detenido temporalmente, pero conserva toda su información.</li>
+        <li><strong>Cerrado</strong> — El proyecto fue concluido.</li>
+        <li><strong>Archivado</strong> — Se mueve fuera de la vista principal sin eliminar nada.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Cómo crear un proyecto</h2>
+      <ol class="workflow">
+        <li>Ve a <strong>Proyectos</strong> en el menú lateral.</li>
+        <li>Haz clic en <strong>"Nuevo proyecto"</strong>.</li>
+        <li>Ingresa el nombre y una descripción opcional.</li>
+        <li>Confirma para crearlo. Serás redirigido al detalle del proyecto.</li>
+      </ol>
+      <p class="tip">Tu plan determina cuántos proyectos activos puedes tener simultáneamente. Puedes ver el límite en el Dashboard o en Suscripción.</p>
+    </div>
+
+    <div class="section">
+      <h2>Cómo agregar productos</h2>
+      <p>Dentro de un proyecto, puedes registrar cada producto que requiere revisión de etiqueta:</p>
+      <ol class="workflow">
+        <li>Abre el proyecto al que quieres agregar el producto.</li>
+        <li>Haz clic en <strong>"Agregar producto"</strong>.</li>
+        <li>Completa el nombre, categoría, país de destino y descripción del producto.</li>
+        <li>Guarda el producto para acceder a su sección de etiquetas.</li>
+      </ol>
+    </div>
+
+    <div class="section">
+      <h2>Cómo subir una etiqueta para revisión</h2>
+      <ol class="workflow">
+        <li>Abre el producto al que pertenece la etiqueta.</li>
+        <li>Haz clic en <strong>"Subir etiqueta"</strong> o <strong>"Nueva versión"</strong>.</li>
+        <li>Arrastra tu archivo o selecciónalo desde tu equipo (PDF, PNG, JPG, DOCX — máximo 20 MB).</li>
+        <li>Agrega notas opcionales para el revisor (p. ej. puntos específicos a verificar).</li>
+        <li>Haz clic en <strong>"Enviar para revisión"</strong>. La etiqueta quedará en estado <em>Enviada</em>.</li>
+      </ol>
+
+      <div class="info-box">
+        <strong>Versiones</strong>
+        <p>Cada vez que corriges y subes el archivo, se crea una nueva versión. El historial completo de versiones
+          queda disponible en el detalle de la etiqueta para que tanto tú como el revisor puedan comparar cambios.</p>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Entendiendo la respuesta del revisor</h2>
+      <p>Cuando el revisor termina el análisis, recibirás una notificación y la etiqueta pasará a uno de estos estados:</p>
+
+      <div class="response-grid">
+        <div class="response-card approved">
+          <div class="response-icon">✓</div>
+          <strong>Aprobada</strong>
+          <p>Tu etiqueta cumple con la normativa. Puedes avanzar a los trámites oficiales.</p>
+        </div>
+        <div class="response-card changes">
+          <div class="response-icon">!</div>
+          <strong>Cambios requeridos</strong>
+          <p>El revisor encontró observaciones. Revisa las notas y documentos adjuntos, corrige tu etiqueta y sube una nueva versión.</p>
         </div>
       </div>
     </div>
+
+    <div class="section">
+      <h2>Flujo completo de revisión</h2>
+      <div class="flow-diagram">
+        <div class="flow-node">Subes etiqueta</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">En revisión</div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-split">
+          <div class="split-approved">Aprobada ✓</div>
+          <div class="split-changes">Cambios requeridos</div>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node flow-loop">Subes nueva versión</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <h2>Consejos para acelerar la aprobación</h2>
+      <ul>
+        <li>Asegúrate de que el archivo sea legible y esté a buena resolución (mín. 300 dpi para imágenes).</li>
+        <li>Usa el campo de notas para indicar si hay elementos específicos que el revisor deba verificar.</li>
+        <li>Revisa las observaciones anteriores antes de subir una nueva versión para no repetir el mismo error.</li>
+        <li>Consulta la normativa del país de destino antes de enviar (puedes abrir una consultoría desde el menú).</li>
+      </ul>
+    </div>
+
+    <div style="margin-top: 2.5rem; text-align: center;">
+      <a routerLink="/projects/new" class="btn-cta">Crear mi primer proyecto</a>
+    </div>
+
+  </div>
+</div>

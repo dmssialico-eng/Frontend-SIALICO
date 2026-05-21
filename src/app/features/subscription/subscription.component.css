@@ -184,6 +184,187 @@
   color: var(--primary-blue);
 }
 
+/* ── Sin suscripción banner ───────────────────────────────────── */
+.no-sub-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 2rem;
+}
+.no-sub-icon { font-size: 2rem; line-height: 1; }
+.no-sub-banner strong { display: block; color: var(--text-main); margin-bottom: 0.25rem; }
+.no-sub-banner p { color: #1d4ed8; font-size: 0.875rem; margin: 0; }
+
+/* ── Precio label ─────────────────────────────────────────────── */
+.price-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; text-align: center; }
+.price-free-note { color: #059669; font-size: 0.875rem; font-weight: 600; margin-top: 0.5rem; }
+
+/* ── Planes vacíos ────────────────────────────────────────────── */
+.empty-plans {
+  padding: 2rem;
+  text-align: center;
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+
+/* ── Modal plan summary ───────────────────────────────────────── */
+.modal-plan-summary {
+  background: var(--soft-bg, #f9fafb);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+.modal-plan-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.875rem;
+  padding: 0.3rem 0;
+}
+.modal-plan-row span { color: var(--text-muted); }
+
+/* ── Alertas ─────────────────────────────────────────────────── */
+.alert {
+  padding: 0.875rem 1.25rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.alert-error   { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+
+/* ── Header de la tarjeta actual ─────────────────────────────── */
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+.card-header h3 { font-size: 0.875rem; color: var(--text-muted); font-weight: 500; margin: 0; }
+
+.plan-name {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--primary-blue);
+  margin-bottom: 0.25rem;
+}
+
+.plan-badge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+}
+.badge-active  { background: #d1fae5; color: #065f46; }
+.badge-expired { background: #fee2e2; color: #991b1b; }
+.badge-pending { background: #fef9c3; color: #92400e; }
+
+/* ── Barra de uso ─────────────────────────────────────────────── */
+.usage-section { }
+.usage-header  { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.8rem; }
+.usage-label   { color: var(--text-muted); }
+.usage-count   { font-weight: 600; }
+.usage-bar {
+  height: 8px;
+  background: var(--border);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.usage-fill {
+  height: 100%;
+  background: var(--primary-blue);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+.usage-fill.usage-warning { background: #f59e0b; }
+.usage-fill.usage-danger  { background: #ef4444; }
+.usage-hint { font-size: 0.75rem; color: #f59e0b; margin-top: 0.4rem; }
+.usage-hint.danger { color: #ef4444; }
+
+/* ── Historial de pagos ───────────────────────────────────────── */
+.section-block { margin-bottom: 3rem; }
+.table-wrapper { overflow-x: auto; }
+.payments-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+.payments-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid var(--border);
+}
+.payments-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-main);
+}
+.payments-table tbody tr:last-child td { border-bottom: none; }
+
+.status-chip {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.chip-confirmed { background: #d1fae5; color: #065f46; }
+.chip-pending   { background: #fef9c3; color: #92400e; }
+.chip-rejected  { background: #fee2e2; color: #991b1b; }
+
+/* ── Textos de color ─────────────────────────────────────────── */
+.text-success { color: #059669; }
+.text-warning { color: #d97706; }
+.text-danger  { color: #dc2626; }
+
+/* ── Tarjeta plan actual badge ───────────────────────────────── */
+.current-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--primary-blue);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+.loading-plan { opacity: 0.6; pointer-events: none; }
+
+/* ── Modal ───────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.modal {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 420px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.modal h3 { font-size: 1.125rem; margin-bottom: 0.75rem; }
+.modal p  { color: var(--text-muted); font-size: 0.875rem; margin-bottom: 0.5rem; }
+.modal-note { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem; }
+.modal-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
+
 .mt-4 { margin-top: 1rem; }
 .mt-8 { margin-top: 2rem; }
 

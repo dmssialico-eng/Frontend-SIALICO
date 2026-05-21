@@ -25,23 +25,31 @@ export class TopUserBarComponent implements OnInit {
       this.user = u;
     });
 
+    // Reacts to any plan change made in subscription.component (shared BehaviorSubject)
+    this.subscriptionService.subscription$.subscribe(sub => {
+      this.subscription = sub;
+    });
+
+    // Trigger the initial fetch — updates subscription$ and all subscribers
     this.subscriptionService.getCurrentSubscription().subscribe({
-      next: (sub) => {
-        this.subscription = sub;
-      },
-      error: () => {
-        // If 404, subscription is null
-        this.subscription = null;
-      }
+      error: () => { this.subscription = null; }
     });
   }
 
   get userInitials(): string {
     if (!this.user || !this.user.full_name) return 'U';
-    const names = this.user.full_name.split(' ');
+    const names = this.user.full_name.trim().split(' ');
     if (names.length >= 2) {
       return (names[0][0] + names[1][0]).toUpperCase();
     }
     return names[0][0].toUpperCase();
+  }
+
+  get planBadgeClass(): string {
+    const name = this.subscription?.plan?.name?.toLowerCase() ?? '';
+    if (name.includes('enterprise')) return 'badge-enterprise';
+    if (name.includes('pro'))        return 'badge-pro';
+    if (name.includes('bás') || name.includes('bas') || name.includes('free')) return 'badge-basic';
+    return '';
   }
 }
