@@ -18,33 +18,38 @@ export type BadgeType = 'label' | 'ticket' | 'project' | 'payment' | 'consultati
       font-weight: 600;
       white-space: nowrap;
     }
-    /* ── Etiquetas ── */
-    .badge-draft              { background: #f3f4f6; color: #6b7280; }
-    .badge-submitted          { background: #ede9fe; color: #6d28d9; }
-    .badge-in_review          { background: #dbeafe; color: #1d4ed8; }
-    .badge-approved           { background: #dcfce7; color: #166534; }
-    .badge-needs_changes      { background: #ffedd5; color: #9a3412; }
-    .badge-changes_required   { background: #ffedd5; color: #9a3412; }
-    /* ── Tickets ── */
-    .badge-open               { background: #dbeafe; color: #1d4ed8; }
-    .badge-in_progress        { background: #fef9c3; color: #854d0e; }
-    .badge-answered           { background: #d1fae5; color: #065f46; }
-    .badge-closed             { background: #f3f4f6; color: #374151; }
-    /* ── Proyectos ── */
-    .badge-active             { background: #dcfce7; color: #166534; }
-    .badge-paused             { background: #fef9c3; color: #854d0e; }
-    .badge-archived           { background: #f3f4f6; color: #6b7280; }
-    .badge-closed_project     { background: #fee2e2; color: #991b1b; }
-    /* ── Pagos ── */
-    .badge-pending            { background: #fef9c3; color: #854d0e; }
-    .badge-confirmed          { background: #dcfce7; color: #166534; }
-    .badge-rejected           { background: #fee2e2; color: #991b1b; }
-    .badge-cancelled          { background: #f3f4f6; color: #6b7280; }
-    /* ── Consultoría ── */
-    .badge-requested          { background: #ede9fe; color: #6d28d9; }
-    .badge-scheduled          { background: #dbeafe; color: #1d4ed8; }
-    .badge-completed          { background: #dcfce7; color: #166534; }
-    .badge-pending_payment    { background: #fef9c3; color: #854d0e; }
+    /* ── Estados de aprobación / éxito ── */
+    .badge-approved, .badge-confirmed, .badge-active, .badge-completed, .badge-answered {
+      background: color-mix(in srgb, var(--success) 15%, transparent);
+      color: color-mix(in srgb, var(--success) 80%, #000);
+    }
+    /* ── Estados en progreso / advertencia ── */
+    .badge-in_progress, .badge-paused, .badge-scheduled {
+      background: color-mix(in srgb, var(--warning) 15%, transparent);
+      color: color-mix(in srgb, var(--warning) 70%, #000);
+    }
+    /* ── Estados de revisión / acción requerida ── */
+    .badge-rejected, .badge-changes_required, .badge-needs_changes,
+    .badge-project-closed {
+      background: color-mix(in srgb, var(--danger) 15%, transparent);
+      color: color-mix(in srgb, var(--danger) 80%, #000);
+    }
+    /* ── Estados neutros / cerrados ── */
+    .badge-draft, .badge-ticket-closed, .badge-archived,
+    .badge-cancelled, .badge-pending_payment {
+      background: #f3f4f6;
+      color: #6b7280;
+    }
+    /* ── Estados enviados / en cola ── */
+    .badge-submitted, .badge-requested, .badge-in_review, .badge-open {
+      background: color-mix(in srgb, var(--primary-blue) 12%, transparent);
+      color: var(--primary-blue-dark);
+    }
+    /* ── Pagos pendientes (amarillo) ── */
+    .badge-payment-pending, .badge-pending {
+      background: color-mix(in srgb, var(--warning) 15%, transparent);
+      color: color-mix(in srgb, var(--warning) 70%, #000);
+    }
   `]
 })
 export class StatusBadgeComponent {
@@ -53,7 +58,11 @@ export class StatusBadgeComponent {
 
   get badgeClass(): string {
     const normalized = this.status?.toLowerCase().replace(/ /g, '_');
-    // 'closed' de proyectos colisiona con 'closed' de tickets; se maneja igual
+    // Para estados que colisionan entre tipos, prefija con el tipo
+    const ambiguous = ['closed', 'pending', 'cancelled'];
+    if (ambiguous.includes(normalized) && this.type) {
+      return `badge-${this.type}-${normalized}`;
+    }
     return `badge-${normalized}`;
   }
 

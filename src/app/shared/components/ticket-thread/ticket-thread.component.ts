@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TicketMessage } from '../../../core/models/models';
+import { TicketMessage } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-ticket-thread',

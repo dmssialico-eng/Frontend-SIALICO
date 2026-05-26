@@ -53,11 +53,12 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
         const roleName = this.authService.getRoleName();
-        if (roleName === 'ADMIN') {
-          this.router.navigate(['/admin/dashboard']);
-        } else {
-          this.router.navigate(['/dashboard']);
-        }
+        // CONSULTANT y CLIENT van al mismo lugar por ahora.
+        // Cuando se implemente el área de consultant, cambiar aquí.
+        const destination = roleName === 'ADMIN' ? '/admin/dashboard' : '/dashboard';
+        this.router.navigate([destination]).finally(() => {
+          this.isLoading = false;
+        });
       },
       error: (err) => {
         if (err.status === 401) {

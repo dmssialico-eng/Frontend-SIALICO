@@ -4,9 +4,10 @@ import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { ReactiveFormsModule, FormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { LabelService } from '../../../core/services/label.service';
 import { ReviewService } from '../../../core/services/review.service';
+import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { PrimaryButtonComponent } from '../../../shared/components/primary-button/primary-button.component';
-import { Label, LabelVersion, LabelReview } from '../../../core/models/models';
+import { Label, LabelVersion, LabelReview } from '../../../shared/models/models';
 import { switchMap, of } from 'rxjs';
 
 type Decision = 'APPROVED' | 'CHANGES_REQUIRED' | null;
@@ -47,7 +48,8 @@ export class AdminLabelReviewComponent implements OnInit {
     private router:        Router,
     private labelService:  LabelService,
     private reviewService: ReviewService,
-    private fb:            FormBuilder
+    private fb:            FormBuilder,
+    private errorHandler:  ErrorHandlerService
   ) {}
 
   ngOnInit() {
@@ -148,8 +150,8 @@ export class AdminLabelReviewComponent implements OnInit {
         this.isSubmitting = false;
         setTimeout(() => this.router.navigate(['/admin/labels']), 1800);
       },
-      error: () => {
-        this.errorMessage = 'No se pudo guardar la revisión. Intenta de nuevo.';
+      error: (err) => {
+        this.errorMessage = this.errorHandler.getErrorMessage(err);
         this.isSubmitting = false;
       }
     });

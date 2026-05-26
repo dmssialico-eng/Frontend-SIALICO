@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { AuditService } from '../../../core/services/audit.service';
-import { AuditLog } from '../../../core/models/models';
+import { AuditLog } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-admin-audit',

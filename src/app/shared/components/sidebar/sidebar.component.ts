@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Subscription, interval, startWith, switchMap } from 'rxjs';
 import { SialicoLogoComponent } from '../sialico-logo/sialico-logo.component';
 import { AuthService } from '../../../core/services/auth.service';
@@ -19,7 +19,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   constructor(
     private authService: AuthService,
-    private router: Router,
     private notificationService: NotificationService
   ) {}
 
@@ -36,6 +35,5 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   logout() {
     this.authService.logout();
-    this.router.navigate(['/login']);
   }
 }

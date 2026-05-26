@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
-import { Payment } from '../../../core/models/models';
+import { Payment } from '../../../shared/models/models';
 
 type PaymentTab = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'ALL';
 

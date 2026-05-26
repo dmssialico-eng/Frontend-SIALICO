@@ -25,7 +25,7 @@ export const routes: Routes = [
   {
     path: 'onboarding',
     canActivate: [authGuard],
-    loadComponent: () => import('./features/onboarding/onboarding.component').then(m => m.OnboardingComponent)
+    loadComponent: () => import('./features/client/onboarding/onboarding.component').then(m => m.OnboardingComponent)
   },
 
   // ── Layout cliente ────────────────────────────────────────────────────────
@@ -35,35 +35,35 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./layouts/dashboard-layout/dashboard-layout.component').then(m => m.DashboardLayoutComponent),
     children: [
-      { path: 'dashboard',      loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent) },
-      { path: 'subscription',   loadComponent: () => import('./features/subscription/subscription.component').then(m => m.SubscriptionComponent) },
-      { path: 'notifications',  loadComponent: () => import('./features/notifications/notifications.component').then(m => m.NotificationsComponent) },
-      { path: 'support',        loadComponent: () => import('./features/support/support.component').then(m => m.SupportComponent) },
-      { path: 'guides',         loadComponent: () => import('./features/guides/guides-home/guides-home.component').then(m => m.GuidesHomeComponent) },
-      { path: 'guides/introduction', loadComponent: () => import('./features/guides/introduction-guide/introduction-guide.component').then(m => m.IntroductionGuideComponent) },
-      { path: 'guides/projects',     loadComponent: () => import('./features/guides/projects-guide/projects-guide.component').then(m => m.ProjectsGuideComponent) },
-      { path: 'profile',        loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent) },
-      { path: 'consultations',  loadComponent: () => import('./features/consultations/consultations.component').then(m => m.ConsultationsComponent) },
+      { path: 'dashboard',      loadComponent: () => import('./features/client/dashboard/dashboard.component').then(m => m.DashboardComponent) },
+      { path: 'subscription',   loadComponent: () => import('./features/client/subscription/subscription.component').then(m => m.SubscriptionComponent) },
+      { path: 'notifications',  loadComponent: () => import('./features/client/notifications/notifications.component').then(m => m.NotificationsComponent) },
+      { path: 'support',        loadComponent: () => import('./features/client/support/support.component').then(m => m.SupportComponent) },
+      { path: 'guides',         loadComponent: () => import('./features/client/guides/guides-home/guides-home.component').then(m => m.GuidesHomeComponent) },
+      { path: 'guides/introduction', loadComponent: () => import('./features/client/guides/introduction-guide/introduction-guide.component').then(m => m.IntroductionGuideComponent) },
+      { path: 'guides/projects',     loadComponent: () => import('./features/client/guides/projects-guide/projects-guide.component').then(m => m.ProjectsGuideComponent) },
+      { path: 'profile',        loadComponent: () => import('./features/client/profile/profile.component').then(m => m.ProfileComponent) },
+      { path: 'consultations',  loadComponent: () => import('./features/client/consultations/consultations.component').then(m => m.ConsultationsComponent) },
 
       // Proyectos
-      { path: 'projects',      loadComponent: () => import('./features/projects/project-list/project-list.component').then(m => m.ProjectListComponent) },
-      { path: 'projects/new',  loadComponent: () => import('./features/projects/project-create/project-create.component').then(m => m.ProjectCreateComponent) },
-      { path: 'projects/:id',  loadComponent: () => import('./features/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent) },
+      { path: 'projects',      loadComponent: () => import('./features/client/projects/project-list/project-list.component').then(m => m.ProjectListComponent) },
+      { path: 'projects/new',  loadComponent: () => import('./features/client/projects/project-create/project-create.component').then(m => m.ProjectCreateComponent) },
+      { path: 'projects/:id',  loadComponent: () => import('./features/client/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent) },
 
       // Productos (anidados en proyecto)
       {
         path: 'projects/:id/products/:productId',
-        loadComponent: () => import('./features/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
+        loadComponent: () => import('./features/client/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
       },
 
       // Etiquetas
       {
         path: 'projects/:id/products/:productId/labels/new',
-        loadComponent: () => import('./features/labels/label-upload/label-upload.component').then(m => m.LabelUploadComponent)
+        loadComponent: () => import('./features/client/labels/label-upload/label-upload.component').then(m => m.LabelUploadComponent)
       },
       {
         path: 'projects/:id/products/:productId/labels/:labelId',
-        loadComponent: () => import('./features/labels/label-detail/label-detail.component').then(m => m.LabelDetailComponent)
+        loadComponent: () => import('./features/client/labels/label-detail/label-detail.component').then(m => m.LabelDetailComponent)
       },
     ]
   },
