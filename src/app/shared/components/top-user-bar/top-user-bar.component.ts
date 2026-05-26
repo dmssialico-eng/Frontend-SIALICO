@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AuthService } from '../../../core/services/auth.service';
 import { SubscriptionService } from '../../../core/services/subscription.service';
-import { User, Subscription } from '../../../core/models/models';
+import { User, Subscription } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-top-user-bar',
@@ -12,6 +13,8 @@ import { User, Subscription } from '../../../core/models/models';
   styleUrls: ['./top-user-bar.component.css']
 })
 export class TopUserBarComponent implements OnInit {
+  private destroyRef = inject(DestroyRef);
+
   user: User | null = null;
   subscription: Subscription | null = null;
 
@@ -21,12 +24,16 @@ export class TopUserBarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.authService.currentUser$.subscribe(u => {
+    this.authService.currentUser$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(u => {
       this.user = u;
     });
 
     // Reacts to any plan change made in subscription.component (shared BehaviorSubject)
-    this.subscriptionService.subscription$.subscribe(sub => {
+    this.subscriptionService.subscription$.pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(sub => {
       this.subscription = sub;
     });
 

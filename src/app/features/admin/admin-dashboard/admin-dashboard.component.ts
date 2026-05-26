@@ -7,7 +7,7 @@ import { AdminService } from '../../../core/services/admin.service';
 import { LabelService } from '../../../core/services/label.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
-import { AdminDashboardStats, Label, Ticket } from '../../../core/models/models';
+import { AdminDashboardStats, Label, Ticket } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -22,6 +22,7 @@ export class AdminDashboardComponent implements OnInit {
   recentTickets: Ticket[] = [];
   adminName = '';
   isLoading = true;
+  loadError = false;
 
   constructor(
     private adminService: AdminService,
@@ -46,7 +47,10 @@ export class AdminDashboardComponent implements OnInit {
         this.recentTickets = (tickets.results || tickets).slice(0, 5);
         this.isLoading = false;
       },
-      error: () => { this.isLoading = false; }
+      error: () => {
+        this.loadError = true;
+        this.isLoading = false;
+      }
     });
   }
 }

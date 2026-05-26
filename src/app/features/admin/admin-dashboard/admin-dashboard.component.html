@@ -9,7 +9,12 @@
   <div class="spinner"></div>
 </div>
 
-<div *ngIf="!isLoading">
+<div *ngIf="loadError" class="error-state">
+  No se pudieron cargar los datos del panel.
+  <button (click)="ngOnInit()">Reintentar</button>
+</div>
+
+<div *ngIf="!isLoading && !loadError">
 
   <!-- KPIs -->
   <div class="kpi-grid">

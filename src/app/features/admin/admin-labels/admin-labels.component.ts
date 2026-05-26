@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { LabelService } from '../../../core/services/label.service';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-import { Label } from '../../../core/models/models';
+import { Label } from '../../../shared/models/models';
 
 type LabelTab = 'SUBMITTED' | 'IN_REVIEW' | 'APPROVED' | 'CHANGES_REQUIRED' | 'all';
 

@@ -27,7 +27,7 @@ export class SubscriptionService {
     );
   }
 
-  getPaymentHistory(): Observable<Payment[]> {
+    getPaymentHistory(): Observable<Payment[]> {
     return this.http.get<any>(`${this.apiUrl}/payments/`).pipe(
       map(response => Array.isArray(response) ? response : (response.results ?? []))
     );

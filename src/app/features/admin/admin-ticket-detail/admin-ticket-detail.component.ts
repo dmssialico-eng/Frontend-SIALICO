@@ -6,7 +6,7 @@ import { AdminService } from '../../../core/services/admin.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { TicketThreadComponent } from '../../../shared/components/ticket-thread/ticket-thread.component';
-import { Ticket, TicketMessage } from '../../../core/models/models';
+import { Ticket, TicketMessage } from '../../../shared/models/models';
 
 @Component({
   selector: 'app-admin-ticket-detail',

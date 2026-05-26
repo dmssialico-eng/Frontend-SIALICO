@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AdminService } from '../../../core/services/admin.service';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
-import { Ticket } from '../../../core/models/models';
+import { Ticket } from '../../../shared/models/models';
 
 type TicketTab = 'OPEN' | 'IN_PROGRESS' | 'ANSWERED' | 'ALL';
 
