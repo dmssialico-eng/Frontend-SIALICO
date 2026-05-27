@@ -61,3 +61,56 @@
 }
 .btn-reject:hover:not(:disabled) { background: #fecaca; }
 .btn-reject:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── Feedback banners ──────────────────────────────────────────── */
+.feedback-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  animation: slideIn 0.2s ease;
+}
+
+.feedback-banner.success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.feedback-banner.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.row-processing {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.btn-loading {
+  min-width: 80px;
+}
+
+.spinner-xs {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

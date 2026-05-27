@@ -3,8 +3,21 @@
   <p>Gestiona y confirma los pagos de suscripción de los usuarios.</p>
 </div>
 
-<!-- Error global -->
-<div class="error-banner" *ngIf="errorMessage">{{ errorMessage }}</div>
+<!-- Feedback banners -->
+<div class="feedback-banner success" *ngIf="successMessage">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <polyline points="20 6 9 17 4 12"></polyline>
+  </svg>
+  {{ successMessage }}
+</div>
+<div class="feedback-banner error" *ngIf="errorMessage">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <circle cx="12" cy="12" r="10"></circle>
+    <line x1="12" y1="8" x2="12" y2="12"></line>
+    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+  </svg>
+  {{ errorMessage }}
+</div>
 
 <!-- Tabs -->
 <div class="tabs-bar">
@@ -43,7 +56,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let p of payments">
+      <tr *ngFor="let p of payments" [class.row-processing]="actioningId === p.id">
         <td class="id-cell">#{{ p.id }}</td>
         <td>{{ p.user }}</td>
         <td class="concept-cell">{{ p.concept || p.plan }}</td>
@@ -57,13 +70,15 @@
           <ng-container *ngIf="p.status?.toUpperCase() === 'PENDING'">
             <button
               class="btn-confirm"
-              [disabled]="actioningId === p.id"
+              [disabled]="actioningId !== null"
+              [class.btn-loading]="actioningId === p.id"
               (click)="confirm(p)">
-              {{ actioningId === p.id ? '...' : 'Confirmar' }}
+              <span *ngIf="actioningId !== p.id">Confirmar</span>
+              <span *ngIf="actioningId === p.id" class="spinner-xs"></span>
             </button>
             <button
               class="btn-reject"
-              [disabled]="actioningId === p.id"
+              [disabled]="actioningId !== null"
               (click)="reject(p)">
               Rechazar
             </button>
