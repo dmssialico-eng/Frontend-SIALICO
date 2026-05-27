@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { LabelService } from '../../../../core/services/label.service';
 import { ProductService } from '../../../../core/services/product.service';
 import { StatusBadgeComponent } from '../../../../shared/components/status-badge/status-badge.component';
@@ -26,6 +27,7 @@ export class ProductDetailComponent implements OnInit {
   labels:    Label[]        = [];
   projectId: number | null  = null;
   isLoading  = true;
+  loadError  = false;
 
   constructor(
     private route:          ActivatedRoute,
@@ -38,22 +40,26 @@ export class ProductDetailComponent implements OnInit {
     const projId = this.route.snapshot.paramMap.get('id');
     this.projectId = projId ? +projId : null;
 
-    if (pid) {
-      this.productService.getProductsByProject(this.projectId!).subscribe({
-        next: (res) => {
-          const all: Product[] = res.results ?? res;
-          this.product = all.find(p => p.id === +pid) ?? null;
-        }
-      });
-
-      this.labelService.getLabelsByProduct(+pid).subscribe({
-        next: (labels) => {
-          this.labels    = labels;
-          this.isLoading = false;
-        },
-        error: () => { this.isLoading = false; }
-      });
+    if (!pid) {
+      this.loadError = true;
+      this.isLoading = false;
+      return;
     }
+
+    forkJoin({
+      product: this.productService.getProduct(+pid),
+      labels:  this.labelService.getLabelsByProduct(+pid),
+    }).subscribe({
+      next: ({ product, labels }) => {
+        this.product   = product;
+        this.labels    = labels;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.loadError = true;
+        this.isLoading = false;
+      }
+    });
   }
 
   get uploadRoute(): string {
