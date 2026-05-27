@@ -16,17 +16,16 @@ type LabelTab = 'SUBMITTED' | 'IN_REVIEW' | 'APPROVED' | 'CHANGES_REQUIRED' | 'a
   styleUrls: ['./admin-labels.component.css']
 })
 export class AdminLabelsComponent implements OnInit {
-  allLabels: Label[] = [];
-  filteredLabels: Label[] = [];
+  labels: Label[] = [];
   activeTab: LabelTab = 'SUBMITTED';
   isLoading = true;
 
   tabs: { key: LabelTab; label: string }[] = [
-    { key: 'SUBMITTED',        label: 'Pendientes'   },
-    { key: 'IN_REVIEW',        label: 'En revisión'  },
-    { key: 'APPROVED',         label: 'Aprobadas'    },
-    { key: 'CHANGES_REQUIRED', label: 'Con cambios'  },
-    { key: 'all',              label: 'Todas'        },
+    { key: 'SUBMITTED',        label: 'Pendientes'  },
+    { key: 'IN_REVIEW',        label: 'En revisión' },
+    { key: 'APPROVED',         label: 'Aprobadas'   },
+    { key: 'CHANGES_REQUIRED', label: 'Con cambios' },
+    { key: 'all',              label: 'Todas'       },
   ];
 
   constructor(private labelService: LabelService) {}
@@ -37,10 +36,10 @@ export class AdminLabelsComponent implements OnInit {
 
   loadLabels() {
     this.isLoading = true;
-    this.labelService.getAllLabels().subscribe({
+    this.labels = [];
+    this.labelService.getAllLabels(this.activeTab).subscribe({
       next: (res: any) => {
-        this.allLabels = res.results ?? res;
-        this.applyFilter();
+        this.labels    = res.results ?? res;
         this.isLoading = false;
       },
       error: () => { this.isLoading = false; }
@@ -48,22 +47,8 @@ export class AdminLabelsComponent implements OnInit {
   }
 
   setTab(tab: LabelTab) {
+    if (this.activeTab === tab) return;
     this.activeTab = tab;
-    this.applyFilter();
-  }
-
-  applyFilter() {
-    if (this.activeTab === 'all') {
-      this.filteredLabels = this.allLabels;
-    } else {
-      this.filteredLabels = this.allLabels.filter(
-        l => l.current_status?.toUpperCase() === this.activeTab
-      );
-    }
-  }
-
-  tabCount(key: LabelTab): number {
-    if (key === 'all') return this.allLabels.length;
-    return this.allLabels.filter(l => l.current_status?.toUpperCase() === key).length;
+    this.loadLabels();
   }
 }

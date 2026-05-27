@@ -14,12 +14,11 @@
 
   <div class="review-layout" *ngIf="targetVersion && label">
 
-    <!-- Columna izquierda: info de la versión -->
     <div class="viewer-col">
       <div class="card">
         <div class="viewer-meta">
           <div>
-            <h2>Producto #{{ label.product }}</h2>
+            <h2>{{ label.product_name || 'Producto #' + label.product }}</h2>
             <span class="meta-sub">
               Versión {{ targetVersion.version_number }}
               &middot; Enviada {{ targetVersion.submitted_at | date:'d MMM yyyy' }}
@@ -39,7 +38,6 @@
           <p>{{ targetVersion.notes }}</p>
         </div>
 
-        <!-- Historial de versiones -->
         <div class="mt-4" *ngIf="versions.length > 1">
           <h3 class="section-sub">Historial de versiones</h3>
           <div class="version-history">
@@ -54,10 +52,8 @@
       </div>
     </div>
 
-    <!-- Columna derecha: formulario de decisión -->
     <div class="decision-col">
 
-      <!-- Mensaje de éxito -->
       <div class="card success-card" *ngIf="successMessage">
         <div class="success-icon">✓</div>
         <p>{{ successMessage }}</p>
@@ -66,7 +62,6 @@
 
       <ng-container *ngIf="!successMessage">
 
-        <!-- Revisión previa -->
         <div class="card already-reviewed" *ngIf="existingReview">
           <p class="muted small">Esta versión ya tiene una revisión registrada. Puedes modificarla enviando una nueva decisión.</p>
           <div class="existing-summary" *ngIf="existingReview.summary">
@@ -75,7 +70,6 @@
           </div>
         </div>
 
-        <!-- Selector de decisión -->
         <div class="card decision-card">
           <h3>Decisión de revisión</h3>
 
@@ -120,7 +114,6 @@
               </textarea>
             </div>
 
-            <!-- Adjunto -->
             <div class="form-group mt-3">
               <label>Adjuntar archivo de retroalimentación <span class="optional">(opcional)</span></label>
 

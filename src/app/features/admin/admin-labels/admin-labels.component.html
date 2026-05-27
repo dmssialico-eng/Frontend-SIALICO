@@ -10,7 +10,9 @@
     [class.active]="activeTab === tab.key"
     (click)="setTab(tab.key)">
     {{ tab.label }}
-    <span class="tab-count" *ngIf="tabCount(tab.key) > 0">{{ tabCount(tab.key) }}</span>
+    <span class="tab-count" *ngIf="activeTab === tab.key && labels.length > 0">
+      {{ labels.length }}
+    </span>
   </button>
 </div>
 
@@ -20,11 +22,11 @@
 
 <div *ngIf="!isLoading">
   <app-empty-state
-    *ngIf="filteredLabels.length === 0"
+    *ngIf="labels.length === 0"
     message="No hay etiquetas en esta categoría.">
   </app-empty-state>
 
-  <div class="card" *ngIf="filteredLabels.length > 0">
+  <div class="card" *ngIf="labels.length > 0">
     <table class="labels-table">
       <thead>
         <tr>
@@ -36,7 +38,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let label of filteredLabels">
+        <tr *ngFor="let label of labels">
           <td class="product-cell">
             <div class="file-icon">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
