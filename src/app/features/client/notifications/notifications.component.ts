@@ -1,9 +1,11 @@
-import { Component, OnInit, DestroyRef, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { HttpClient } from '@angular/common/http';
 import { NotificationService } from '../../../core/services/notification.service';
+import { InfiniteScroller } from '../../../core/services/pagination.service';
 import { Notification } from '../../../shared/models/models';
+import { environment } from '../../../../environments/environment';
 
 type NotifTab = 'all' | 'projects' | 'regulatory' | 'training' | 'billing';
 
@@ -14,82 +16,76 @@ type NotifTab = 'all' | 'projects' | 'regulatory' | 'training' | 'billing';
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.css']
 })
-export class NotificationsComponent implements OnInit {
-  private destroyRef = inject(DestroyRef);
-
-  allNotifications: Notification[] = [];
-  filteredNotifications: Notification[] = [];
+export class NotificationsComponent implements OnInit, OnDestroy {
+  scroller!: InfiniteScroller<Notification>;
   activeTab: NotifTab = 'all';
-  isLoading = true;
   loadError = false;
 
   tabs: { key: NotifTab; label: string }[] = [
-    { key: 'all',        label: 'Todas' },
-    { key: 'projects',   label: 'Proyectos' },
-    { key: 'regulatory', label: 'Regulatorio' },
+    { key: 'all',        label: 'Todas'        },
+    { key: 'projects',   label: 'Proyectos'    },
+    { key: 'regulatory', label: 'Regulatorio'  },
     { key: 'training',   label: 'Capacitación' },
-    { key: 'billing',    label: 'Facturación' },
+    { key: 'billing',    label: 'Facturación'  },
   ];
 
+  // Mapa de tab → notification_type para filtrar en backend
+  private readonly typeMap: Partial<Record<NotifTab, string>> = {
+    projects:   'PROJECT',
+    regulatory: 'LABEL_REVIEW',
+    billing:    'PAYMENT',
+  };
+
   constructor(
+    private http:                HttpClient,
     private notificationService: NotificationService,
-    private router: Router
+    private router:              Router
   ) {}
 
   ngOnInit() {
-    this.loadNotifications();
+    this.initScroller();
   }
 
-  loadNotifications() {
-    this.isLoading = true;
-    this.loadError = false;
-    this.notificationService.getNotifications().pipe(
-      takeUntilDestroyed(this.destroyRef)
-    ).subscribe({
-      next: (res) => {
-        this.allNotifications = res.results || res;
-        this.applyFilter();
-        this.isLoading = false;
-      },
-      error: () => {
-        this.loadError = true;
-        this.isLoading = false;
-      }
-    });
+  ngOnDestroy() {}
+
+  initScroller() {
+    const params: Record<string, string> = {};
+    const type = this.typeMap[this.activeTab];
+    if (type) params['notification_type'] = type;
+
+    this.scroller = new InfiniteScroller<Notification>(
+      this.http,
+      `${environment.apiUrl}/notifications/`
+    );
+    this.scroller.loadMore(params);
   }
 
   setTab(tab: NotifTab) {
+    if (this.activeTab === tab) return;
     this.activeTab = tab;
-    this.applyFilter();
+    this.initScroller();
   }
 
-  applyFilter() {
-    if (this.activeTab === 'all') {
-      this.filteredNotifications = this.allNotifications;
-      return;
+  @HostListener('window:scroll')
+  onScroll() {
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
+    if (nearBottom) {
+      const params: Record<string, string> = {};
+      const type = this.typeMap[this.activeTab];
+      if (type) params['notification_type'] = type;
+      this.scroller.loadMore(params);
     }
-    const typeMap: Record<NotifTab, string> = {
-      all:        '',
-      projects:   'project',
-      regulatory: 'label_review',
-      training:   'training',
-      billing:    'payment',
-    };
-    const filter = typeMap[this.activeTab];
-    this.filteredNotifications = this.allNotifications.filter(n =>
-      n.notification_type?.toLowerCase().includes(filter)
-    );
   }
 
   get unreadCount(): number {
-    return this.filteredNotifications.filter(n => !n.is_read).length;
+    return this.scroller?.items.filter(n => !n.is_read).length ?? 0;
   }
 
   markAllAsRead() {
     this.notificationService.markAllAsRead().subscribe({
       next: () => {
-        this.allNotifications.forEach(n => (n.is_read = true));
-        this.applyFilter();
+        this.scroller.items.forEach(n => (n.is_read = true));
       }
     });
   }
@@ -104,7 +100,6 @@ export class NotificationsComponent implements OnInit {
     if (route) this.router.navigate(route);
   }
 
-  /** Returns router commands array for a notification, or null if no route applies. */
   resolveRoute(notif: Notification): any[] | null {
     const entity = (notif.related_entity ?? '').toLowerCase();
     const id     = notif.related_id;

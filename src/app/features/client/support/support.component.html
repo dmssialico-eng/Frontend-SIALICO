@@ -9,11 +9,11 @@
     <button class="btn-primary" (click)="view = 'new'">+ Nuevo ticket</button>
   </div>
 
-  <div *ngIf="isLoadingTickets" class="loading-state"><div class="spinner"></div></div>
+  <div *ngIf="scroller?.isLoading && (scroller?.items?.length ?? 0) === 0" class="loading-state"><div class="spinner"></div></div>
 
-  <div *ngIf="!isLoadingTickets">
+  <div>
 
-    <div class="empty-state" *ngIf="tickets.length === 0">
+    <div class="empty-state" *ngIf="(scroller?.items?.length ?? 0) === 0 && !scroller?.isLoading">
       <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
       </svg>
@@ -21,7 +21,7 @@
       <button class="btn-primary" (click)="view = 'new'">Crear mi primer ticket</button>
     </div>
 
-    <div class="card" *ngIf="tickets.length > 0">
+    <div class="card" *ngIf="(scroller?.items?.length ?? 0) > 0">
       <table class="tickets-table">
         <thead>
           <tr>
@@ -34,7 +34,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let ticket of tickets" (click)="openTicket(ticket)" class="clickable-row">
+          <tr *ngFor="let ticket of scroller.items" (click)="openTicket(ticket)" class="clickable-row">
             <td class="id-cell">#{{ ticket.id }}</td>
             <td class="subject-cell">{{ ticket.subject }}</td>
             <td>
@@ -51,6 +51,17 @@
     </div>
 
   </div>
+
+  <!-- Spinner scroll infinito -->
+  <div class="load-more-spinner" *ngIf="scroller?.isLoading && (scroller?.items?.length ?? 0) > 0">
+    <div class="spinner small"></div>
+    <span>Cargando más tickets...</span>
+  </div>
+  <!-- Fin de lista -->
+  <div class="end-of-list" *ngIf="scroller && !scroller.hasMore && (scroller?.items?.length ?? 0) > 0">
+    {{ scroller.total }} ticket{{ scroller.total !== 1 ? 's' : '' }} en total
+  </div>
+
 </ng-container>
 
 
@@ -85,6 +96,7 @@
           <option value="LOW">Baja — tengo tiempo</option>
           <option value="MEDIUM">Media — necesito ayuda pronto</option>
           <option value="HIGH">Alta — está afectando mi trabajo</option>
+          <option value="CRITICAL">Crítica — sistema completamente bloqueado</option>
         </select>
       </div>
 

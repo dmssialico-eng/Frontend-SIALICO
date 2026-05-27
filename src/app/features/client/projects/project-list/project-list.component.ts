@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ProjectService } from '../../../../core/services/project.service';
+import { HttpClient } from '@angular/common/http';
 import { PrimaryButtonComponent } from '../../../../shared/components/primary-button/primary-button.component';
+import { InfiniteScroller } from '../../../../core/services/pagination.service';
 import { Project } from '../../../../shared/models/models';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-project-list',
@@ -12,29 +14,26 @@ import { Project } from '../../../../shared/models/models';
   templateUrl: './project-list.component.html',
   styleUrls: ['./project-list.component.css']
 })
-export class ProjectListComponent implements OnInit {
-  projects: Project[] = [];
-  isLoading = true;
+export class ProjectListComponent implements OnInit, OnDestroy {
+  scroller!: InfiniteScroller<Project>;
   loadError = false;
 
-  constructor(private projectService: ProjectService) {}
+  constructor(private http: HttpClient) {}
 
   ngOnInit() {
-    this.loadProjects();
+    this.scroller = new InfiniteScroller<Project>(
+      this.http,
+      `${environment.apiUrl}/projects/`
+    );
+    this.scroller.loadMore();
   }
 
-  loadProjects() {
-    this.isLoading = true;
-    this.loadError = false;
-    this.projectService.getProjects().subscribe({
-      next: (res) => {
-        this.projects = res.results || res;
-        this.isLoading = false;
-      },
-      error: () => {
-        this.loadError = true;
-        this.isLoading = false;
-      }
-    });
+  ngOnDestroy() {}
+
+  @HostListener('window:scroll')
+  onScroll() {
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
+    if (nearBottom) this.scroller.loadMore();
   }
 }

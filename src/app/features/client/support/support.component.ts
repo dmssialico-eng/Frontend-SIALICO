@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { TicketService } from '../../../core/services/ticket.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ErrorHandlerService } from '../../../core/services/error-handler.service';
 import { PrimaryButtonComponent } from '../../../shared/components/primary-button/primary-button.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { TicketThreadComponent } from '../../../shared/components/ticket-thread/ticket-thread.component';
+import { InfiniteScroller } from '../../../core/services/pagination.service';
 import { Ticket, TicketMessage } from '../../../shared/models/models';
+import { environment } from '../../../../environments/environment';
 
 type SupportView = 'list' | 'new' | 'detail';
 
@@ -24,14 +27,13 @@ type SupportView = 'list' | 'new' | 'detail';
   templateUrl: './support.component.html',
   styleUrls: ['./support.component.css']
 })
-export class SupportComponent implements OnInit {
+export class SupportComponent implements OnInit, OnDestroy {
   view: SupportView = 'list';
-  tickets:        Ticket[]        = [];
+  scroller!: InfiniteScroller<Ticket>;
   selectedTicket: Ticket | null   = null;
   messages:       TicketMessage[] = [];
   currentUserId:  number | null   = null;
 
-  isLoadingTickets  = true;
   isLoadingMessages = false;
   isCreating        = false;
   isSending         = false;
@@ -39,14 +41,8 @@ export class SupportComponent implements OnInit {
 
   newTicketForm!: FormGroup;
 
-  priorityOptions = [
-    { value: 'LOW',      label: 'Baja' },
-    { value: 'MEDIUM',   label: 'Media' },
-    { value: 'HIGH',     label: 'Alta' },
-    { value: 'CRITICAL', label: 'Crítica' },
-  ];
-
   constructor(
+    private http:          HttpClient,
     private ticketService: TicketService,
     private authService:   AuthService,
     private errorHandler:  ErrorHandlerService,
@@ -63,18 +59,25 @@ export class SupportComponent implements OnInit {
       priority:    ['MEDIUM'],
     });
 
-    this.loadTickets();
+    this.initScroller();
   }
 
-  loadTickets() {
-    this.isLoadingTickets = true;
-    this.ticketService.getTickets().subscribe({
-      next: (res: any) => {
-        this.tickets = res.results ?? res;
-        this.isLoadingTickets = false;
-      },
-      error: () => { this.isLoadingTickets = false; }
-    });
+  ngOnDestroy() {}
+
+  private initScroller() {
+    this.scroller = new InfiniteScroller<Ticket>(
+      this.http,
+      `${environment.apiUrl}/tickets/`
+    );
+    this.scroller.loadMore();
+  }
+
+  @HostListener('window:scroll')
+  onScroll() {
+    if (this.view !== 'list') return;
+    const nearBottom =
+      window.innerHeight + window.scrollY >= document.body.scrollHeight - 200;
+    if (nearBottom) this.scroller.loadMore();
   }
 
   openTicket(ticket: Ticket) {
@@ -99,7 +102,8 @@ export class SupportComponent implements OnInit {
 
     this.ticketService.createTicket(this.newTicketForm.value).subscribe({
       next: (ticket) => {
-        this.tickets.unshift(ticket);
+        // Agregar al inicio de la lista acumulada
+        this.scroller.items.unshift(ticket);
         this.newTicketForm.reset({ priority: 'MEDIUM' });
         this.isCreating = false;
         this.openTicket(ticket);

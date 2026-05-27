@@ -1,7 +1,7 @@
 <div class="page-header">
   <div>
     <h1>Notificaciones</h1>
-    <p *ngIf="!isLoading">{{ unreadCount }} sin leer</p>
+    <p *ngIf="scroller && !scroller.isLoading">{{ unreadCount }} sin leer</p>
   </div>
   <button class="btn-text" (click)="markAllAsRead()" *ngIf="unreadCount > 0">
     Marcar todas como leídas
@@ -18,19 +18,21 @@
   </button>
 </div>
 
-<div *ngIf="isLoading" class="loading-state">
+<!-- Primera carga -->
+<div *ngIf="scroller?.isLoading && scroller.items.length === 0" class="loading-state">
   <div class="spinner"></div>
   <p>Cargando notificaciones...</p>
 </div>
 
+<!-- Error -->
 <div *ngIf="loadError" class="error-state">
   No se pudieron cargar las notificaciones.
-  <button (click)="loadNotifications()">Reintentar</button>
+  <button (click)="initScroller()">Reintentar</button>
 </div>
 
-<div *ngIf="!isLoading && !loadError" class="notifications-list">
+<div class="notifications-list">
 
-  <div class="empty-state" *ngIf="filteredNotifications.length === 0">
+  <div class="empty-state" *ngIf="scroller && scroller.items.length === 0 && !scroller.isLoading">
     <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
       <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
@@ -40,36 +42,31 @@
 
   <div
     class="notification-item"
-    *ngFor="let notif of filteredNotifications"
+    *ngFor="let notif of scroller?.items ?? []"
     [class.unread]="!notif.is_read"
     [class.navigable]="hasRoute(notif)"
     (click)="handleClick(notif)">
 
     <div class="notif-icon" [ngClass]="notif.notification_type.toLowerCase()">
-      <!-- LABEL_REVIEW -->
       <svg *ngIf="notif.notification_type?.toUpperCase() === 'LABEL_REVIEW'"
            width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
         <line x1="7" y1="7" x2="7.01" y2="7"></line>
       </svg>
-      <!-- PAYMENT / LIMIT -->
       <svg *ngIf="notif.notification_type?.toUpperCase() === 'PAYMENT' || notif.notification_type?.toUpperCase() === 'LIMIT'"
            width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="12" y1="1" x2="12" y2="23"></line>
         <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
       </svg>
-      <!-- TICKET -->
       <svg *ngIf="notif.notification_type?.toUpperCase() === 'TICKET'"
            width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
       </svg>
-      <!-- CONSULTATION -->
       <svg *ngIf="notif.notification_type?.toUpperCase() === 'CONSULTATION'"
            width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
         <circle cx="9" cy="7" r="4"></circle>
       </svg>
-      <!-- PROJECT / default -->
       <svg *ngIf="notif.notification_type?.toUpperCase() === 'PROJECT' || !notif.notification_type"
            width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -87,6 +84,17 @@
     </div>
 
     <div class="unread-dot" *ngIf="!notif.is_read"></div>
+  </div>
+
+  <!-- Spinner scroll infinito -->
+  <div class="load-more-spinner" *ngIf="scroller?.isLoading && scroller.items.length > 0">
+    <div class="spinner small"></div>
+    <span>Cargando más...</span>
+  </div>
+
+  <!-- Fin de lista -->
+  <div class="end-of-list" *ngIf="scroller && !scroller.hasMore && scroller.items.length > 0">
+    Has visto todas tus notificaciones
   </div>
 
 </div>
