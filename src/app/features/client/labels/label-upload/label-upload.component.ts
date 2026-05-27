@@ -37,6 +37,7 @@ export class LabelUploadComponent implements OnInit {
     'text/plain',
   ];
 
+  readonly MAX_FILE_MB = 10;
   readonly allowedExtensions = 'PDF, PNG, JPG, DOCX, TXT';
 
   readonly stepLabels: Record<UploadStep, string> = {
@@ -61,7 +62,6 @@ export class LabelUploadComponent implements OnInit {
 
     this.form = this.fb.group({ notes: [''] });
 
-    // Verificar si ya existe una Label para este producto
     this.labelService.getLabelsByProduct(this.productId).subscribe({
       next: (labels) => {
         if (labels.length > 0) {
@@ -72,7 +72,6 @@ export class LabelUploadComponent implements OnInit {
     });
   }
 
-  // ── Drag & Drop ──────────────────────────────────────────────────────────
 
   onDragOver(event: DragEvent) {
     event.preventDefault();
@@ -101,8 +100,8 @@ export class LabelUploadComponent implements OnInit {
       this.errorMessage = `Tipo de archivo no permitido. Formatos aceptados: ${this.allowedExtensions}`;
       return;
     }
-    if (file.size > 20 * 1024 * 1024) {
-      this.errorMessage = 'El archivo no puede superar 20 MB.';
+    if (file.size > 10 * 1024 * 1024) {
+      this.errorMessage = 'El archivo no puede superar 10 MB.';
       return;
     }
     this.errorMessage = '';
@@ -122,8 +121,6 @@ export class LabelUploadComponent implements OnInit {
     this.previewUrl   = null;
     this.errorMessage = '';
   }
-
-  // ── Envío ────────────────────────────────────────────────────────────────
 
   submit() {
     if (!this.selectedFile || this.isSubmitting) return;
@@ -153,7 +150,6 @@ export class LabelUploadComponent implements OnInit {
     });
   }
 
-  // ── Helpers ──────────────────────────────────────────────────────────────
 
   get backRoute(): string {
     return `/projects/${this.projectId}/products/${this.productId}`;
