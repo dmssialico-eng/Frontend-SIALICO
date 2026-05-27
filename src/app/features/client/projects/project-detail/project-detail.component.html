@@ -136,6 +136,29 @@
     </form>
   </div>
 
+
+  <!-- Barra de filtros de productos -->
+  <div class="products-filters" *ngIf="products.length > 0 || hasActiveFilters">
+    <div class="filter-group">
+      <select class="filter-select" [(ngModel)]="filterStatus" (change)="applyFilter()">
+        <option value="">Todos los estados</option>
+        <option *ngFor="let s of statusOptions.slice(1)" [value]="s.value">{{ s.label }}</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <select class="filter-select" [(ngModel)]="filterCategory" (change)="applyFilter()">
+        <option value="">Todas las categorías</option>
+        <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+      </select>
+    </div>
+    <button class="btn-clear-filters" *ngIf="hasActiveFilters" (click)="clearFilters()">
+      ✕ Limpiar filtros
+    </button>
+    <span class="filter-spinner" *ngIf="isFilteringProducts">
+      <span class="spinner small"></span>
+    </span>
+  </div>
+
   <!-- Lista de productos -->
   <div *ngIf="products.length === 0 && !showProductForm">
     <app-empty-state
