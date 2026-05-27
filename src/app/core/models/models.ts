@@ -109,6 +109,7 @@ export type LabelStatus =
 
 /** Entidad raíz — contenedor de versiones de etiqueta para un producto */
 export interface Label {
+  product_name?: string;
   id: number;
   product: number;
   current_status: LabelStatus;
