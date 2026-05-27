@@ -13,8 +13,6 @@ export class LabelService {
 
   constructor(private http: HttpClient) {}
 
-  // ── Labels ────────────────────────────────────────────────────────────────
-
   getLabelsByProduct(productId: number): Observable<Label[]> {
     const params = new HttpParams().set('product', productId.toString());
     return this.http.get<any>(`${this.labelsUrl}/`, { params }).pipe(
@@ -31,13 +29,13 @@ export class LabelService {
   }
 
   getAllLabels(status?: string): Observable<any> {
-    const params = status
-      ? new HttpParams().set('status', status.toUpperCase())
-      : new HttpParams();
+    let params = new HttpParams();
+    if (status && status !== 'all') {
+      params = params.set('current_status', status.toUpperCase());
+    }
     return this.http.get<any>(`${this.labelsUrl}/`, { params });
   }
 
-  // ── Label Versions ────────────────────────────────────────────────────────
 
   getLabelVersions(labelId: number): Observable<LabelVersion[]> {
     const params = new HttpParams().set('label', labelId.toString());
@@ -46,7 +44,6 @@ export class LabelService {
     );
   }
 
-  // ── Documents ─────────────────────────────────────────────────────────────
 
   uploadDocument(file: File, productId?: number): Observable<UploadedDocument> {
     const formData = new FormData();
@@ -55,14 +52,7 @@ export class LabelService {
     return this.http.post<UploadedDocument>(`${this.documentsUrl}/`, formData);
   }
 
-  // ── Flujo completo: Document → (Label) → LabelVersion ────────────────────
 
-  /**
-   * Sube una nueva versión de etiqueta en 3 pasos:
-   *   1. POST /api/documents/  — sube el archivo físico
-   *   2. POST /api/labels/     — crea el contenedor Label (solo si no existe)
-   *   3. POST /api/label-versions/ — crea la LabelVersion con referencia al Document
-   */
   submitLabelVersion(params: {
     productId: number;
     labelId:   number | null;

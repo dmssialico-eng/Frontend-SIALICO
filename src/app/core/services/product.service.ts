@@ -4,9 +4,12 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { Product } from '../models/models';
 
-@Injectable({
-  providedIn: 'root'
-})
+export interface ProductFilters {
+  status?:   string;
+  category?: string;
+}
+
+@Injectable({ providedIn: 'root' })
 export class ProductService {
   private apiUrl = `${environment.apiUrl}/products`;
 
@@ -16,8 +19,14 @@ export class ProductService {
     return this.http.get<any>(`${this.apiUrl}/`);
   }
 
-  getProductsByProject(projectId: number): Observable<any> {
-    const params = new HttpParams().set('project', projectId.toString());
+  getProduct(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/${id}/`);
+  }
+
+  getProductsByProject(projectId: number, filters?: ProductFilters): Observable<any> {
+    let params = new HttpParams().set('project', projectId.toString());
+    if (filters?.status)   params = params.set('status', filters.status);
+    if (filters?.category) params = params.set('category', filters.category);
     return this.http.get<any>(`${this.apiUrl}/`, { params });
   }
 
