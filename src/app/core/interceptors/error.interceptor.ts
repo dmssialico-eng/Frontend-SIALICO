@@ -1,8 +1,10 @@
-import { HttpInterceptorFn, HttpErrorResponse, HttpRequest, HttpHandlerFn } from '@angular/common/http';
+import { HttpInterceptorFn, HttpErrorResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
+
+const AUTH_ROUTES = ['/auth/login/', '/auth/refresh/', '/auth/register/'];
 
 export const errorInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthService);
@@ -12,8 +14,8 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
       if (error.status !== 401) return throwError(() => error);
 
-      // Don't try to refresh if the failing request was the refresh itself
-      if (req.url.includes('/auth/refresh/')) {
+      const isAuthRoute = AUTH_ROUTES.some(route => req.url.includes(route));
+      if (isAuthRoute) {
         authService.clearSession();
         router.navigate(['/login']);
         return throwError(() => error);
