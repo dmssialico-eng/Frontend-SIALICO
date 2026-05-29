@@ -1,3 +1,14 @@
+/**
+ * LoginComponent
+ *
+ * Handles the user login flow with email and password.
+ * On success, redirects to /admin/dashboard for ADMIN users and /dashboard
+ * for all other roles (CLIENT, CONSULTANT).
+ * Displays inline validation and server error messages.
+ *
+ * Route: /login — protected by guestGuard.
+ * Depends on: AuthService.
+ */
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -23,10 +34,14 @@ import { PrimaryButtonComponent } from '../../../shared/components/primary-butto
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  /** True while the login HTTP request is in flight. */
   isLoading    = false;
+  /** Displays a server-side or network error message below the form. */
   errorMessage = '';
+  /** Toggles the password field between text and password input type. */
   showPassword = false;
 
+  /** Marketing bullet points shown on the right panel of the login page. */
   features = [
     'Gestión de etiquetas FDA y COFEPRIS',
     'Revisión profesional por especialistas',
@@ -45,6 +60,7 @@ export class LoginComponent {
     });
   }
 
+  /** Submits credentials and navigates to the role-appropriate dashboard on success. */
   onSubmit() {
     if (this.loginForm.invalid) return;
     this.isLoading    = true;
@@ -53,8 +69,8 @@ export class LoginComponent {
     this.authService.login(this.loginForm.value).subscribe({
       next: () => {
         const roleName = this.authService.getRoleName();
-        // CONSULTANT y CLIENT van al mismo lugar por ahora.
-        // Cuando se implemente el área de consultant, cambiar aquí.
+        // CONSULTANT and CLIENT share the same dashboard for now.
+        // Update this redirect when a dedicated consultant area is implemented.
         const destination = roleName === 'ADMIN' ? '/admin/dashboard' : '/dashboard';
         this.router.navigate([destination]).finally(() => {
           this.isLoading = false;

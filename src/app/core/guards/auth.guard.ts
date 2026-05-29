@@ -1,32 +1,38 @@
+/**
+ * authGuard
+ *
+ * Protects all routes that require an authenticated user.
+ * Validates authentication by consulting the server (/auth/me/) rather
+ * than trusting localStorage alone — this prevents bypass via a manipulated
+ * or expired token stored locally.
+ *
+ * Applied to: all routes under DashboardLayout and AdminLayout,
+ *             and the standalone /onboarding route.
+ *
+ * Redirect: unauthenticated users are sent to /login.
+ */
 import { inject } from '@angular/core';
 import { Router, CanActivateFn } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { map, catchError, of } from 'rxjs';
 
-/**
- * Verifica autenticación real consultando al servidor (/auth/me/).
- * Esto previene el bypass vía localStorage manipulado: si el token
- * es inválido, el servidor devolverá 401 y se redirige a login.
- * En rutas donde ya tenemos el usuario cargado en memoria (BehaviorSubject),
- * usamos el caché para evitar una petición extra en cada navegación.
- */
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  // Si no hay token en storage, redirige inmediatamente sin llamada HTTP
+  // No token in storage — redirect immediately without an HTTP call.
   if (!authService.isAuthenticated()) {
     return router.parseUrl('/login');
   }
 
-  // Si ya tenemos el usuario cargado en memoria, confiar en él
+  // User is already loaded in memory (normal in-session navigation).
   const currentUser = authService.getCurrentUser();
   if (currentUser) {
     return true;
   }
 
-  // Token presente pero sin usuario en memoria (ej. recarga de página):
-  // validar el token contra el servidor
+  /* Token present but no in-memory user (e.g. page reload).
+     Validate the token server-side before allowing access. */
   return authService.me().pipe(
     map(() => true),
     catchError(() => {

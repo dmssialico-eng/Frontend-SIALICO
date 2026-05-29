@@ -1,17 +1,23 @@
 <div class="top-bar">
   <div class="breadcrumb">
-    <!-- Optional Breadcrumb could go here -->
+    <!-- Breadcrumb placeholder — reserved for future contextual navigation. -->
   </div>
 
   <div class="user-info">
     <div class="company-details" *ngIf="user">
       <span class="company-name">Empresa Activa: {{ user.company_name }}</span>
+      <!-- planBadgeClass applies the correct tier color (enterprise/pro/basic). -->
       <span class="plan-badge" [ngClass]="planBadgeClass" *ngIf="subscription">
         {{ subscription.plan.name }} activo
       </span>
+      <!-- Shown when the user has no active subscription at all. -->
       <span class="plan-badge badge-none" *ngIf="!subscription">Sin plan activo</span>
     </div>
 
+    <!--
+      Avatar circle uses planBadgeClass for the border color, matching the plan pill.
+      Displays the user's initials derived by the userInitials getter.
+    -->
     <div class="avatar" [ngClass]="planBadgeClass">
       {{ userInitials }}
     </div>

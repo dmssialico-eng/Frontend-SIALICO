@@ -1,15 +1,29 @@
+/**
+ * GuidesHomeComponent
+ *
+ * Displays a set of interactive regulatory workflow checklists.
+ * Each checklist is static data defined in the component — no API calls are made.
+ * When a checklist is opened, a deep copy is made so toggling items does not
+ * mutate the original data; closing and re-opening always resets the checklist.
+ *
+ * Route: /guides — protected by authGuard.
+ */
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
+/** A single actionable step within a checklist. */
 interface ChecklistItem {
   text: string;
+  /** Whether the user has ticked this item in the current session. Not persisted. */
   done: boolean;
 }
 
+/** A named collection of checklist items with a short preview for the card view. */
 interface Checklist {
   id: string;
   title: string;
+  /** First two item texts shown on the collapsed card as a teaser. */
   preview: string[];
   items: ChecklistItem[];
 }
@@ -23,6 +37,7 @@ interface Checklist {
 })
 export class GuidesHomeComponent {
 
+  /** The checklist currently open in the modal; null when no checklist is open. */
   activeChecklist: Checklist | null = null;
 
   checklists: Checklist[] = [
@@ -71,6 +86,10 @@ export class GuidesHomeComponent {
     }
   ];
 
+  /**
+   * Opens a checklist in the modal. Items are deep-copied and reset to `done: false`
+   * so each session starts fresh regardless of any prior in-memory state.
+   */
   openChecklist(checklist: Checklist): void {
     this.activeChecklist = {
       ...checklist,
@@ -82,24 +101,29 @@ export class GuidesHomeComponent {
     this.activeChecklist = null;
   }
 
+  /** Flips the done state of a single item by its index in the active checklist. */
   toggleItem(index: number): void {
     if (!this.activeChecklist) return;
     this.activeChecklist.items[index].done = !this.activeChecklist.items[index].done;
   }
 
+  /** Number of ticked items in the currently open checklist; 0 when no checklist is open. */
   get completedCount(): number {
     return this.activeChecklist?.items.filter(i => i.done).length ?? 0;
   }
 
+  /** Total number of items in the currently open checklist; 0 when no checklist is open. */
   get totalCount(): number {
     return this.activeChecklist?.items.length ?? 0;
   }
 
+  /** Returns 0-100 completion percentage for the progress bar in the modal. */
   get progressPercent(): number {
     if (!this.totalCount) return 0;
     return Math.round((this.completedCount / this.totalCount) * 100);
   }
 
+  /** Closes the modal when the user clicks the semi-transparent overlay (not the panel itself). */
   onOverlayClick(event: MouseEvent): void {
     if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
       this.closeChecklist();

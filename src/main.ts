@@ -1,3 +1,7 @@
+/**
+ * Application entry point.
+ * Bootstraps AppComponent using the providers defined in appConfig.
+ */
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { AppComponent } from './app/app.component';

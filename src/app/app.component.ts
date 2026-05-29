@@ -1,3 +1,10 @@
+/**
+ * AppComponent
+ *
+ * Root shell component. Renders a single <router-outlet> that the Angular
+ * router uses to mount the active route's component tree.
+ * All application logic lives in child components and services.
+ */
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 

@@ -1,3 +1,17 @@
+/**
+ * app.config.ts
+ *
+ * Root application configuration for Angular's standalone bootstrap API.
+ * Registers global providers for routing, HTTP, and icon libraries.
+ *
+ * Providers:
+ *   - provideRouter          — registers the application routes from app.routes.ts.
+ *   - provideHttpClient      — enables the Angular HTTP client.
+ *     - authTokenInterceptor — attaches the JWT Bearer token to every request.
+ *     - errorInterceptor     — handles 401s with silent token refresh.
+ *   - LucideAngularModule    — tree-shakeable SVG icon library; only the icons
+ *                              listed here are included in the bundle.
+ */
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
@@ -20,10 +34,13 @@ import {
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Application router using hash-free HTML5 history API.
     provideRouter(routes),
+    // HTTP client with functional interceptors applied in declaration order.
     provideHttpClient(
       withInterceptors([authTokenInterceptor, errorInterceptor])
     ),
+    // Icon subset — only selected icons are bundled to minimize payload size.
     importProvidersFrom(
       LucideAngularModule.pick({
         Mail, Lock, Eye, EyeOff, AlertCircle,

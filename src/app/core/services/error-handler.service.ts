@@ -1,9 +1,28 @@
+/**
+ * ErrorHandlerService
+ *
+ * Translates HttpErrorResponse instances into user-facing error strings.
+ * Centralizes error message logic so components do not duplicate HTTP
+ * status-code handling.
+ *
+ * Used by: ProjectDetailComponent, LabelUploadComponent,
+ *          AdminLabelReviewComponent, SupportComponent,
+ *          SubscriptionComponent, ProfileComponent.
+ */
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Injectable({ providedIn: 'root' })
 export class ErrorHandlerService {
 
+  /**
+   * Returns a localized, user-friendly error message for the given response.
+   * Checks network connectivity first, then maps known HTTP status codes.
+   * For 400 responses, attempts to extract the first field-level validation message.
+   *
+   * @param error - The HttpErrorResponse to interpret.
+   * @returns A human-readable error string suitable for display in a UI alert.
+   */
   getErrorMessage(error: HttpErrorResponse): string {
     if (!navigator.onLine) {
       return 'Sin conexión a internet. Verifica tu red e intenta de nuevo.';
@@ -21,6 +40,12 @@ export class ErrorHandlerService {
     }
   }
 
+  /**
+   * Extracts the first field-level validation error from a 400 response body.
+   * DRF serializers return validation errors as { field: [message, ...] }.
+   *
+   * @returns The formatted "field: message" string, or null if extraction fails.
+   */
   private extractValidationMessage(error: HttpErrorResponse): string | null {
     const data = error.error;
     if (!data || typeof data !== 'object') return null;
