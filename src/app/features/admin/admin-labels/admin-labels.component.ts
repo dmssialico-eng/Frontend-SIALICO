@@ -1,3 +1,13 @@
+/**
+ * AdminLabelsComponent
+ *
+ * Admin view of all labels across all clients, organized by review status.
+ * Switching tabs triggers a fresh API call with the selected status as a filter.
+ * Defaults to the SUBMITTED tab so administrators see the labels awaiting attention first.
+ *
+ * Route: /admin/labels — protected by authGuard + roleGuard (ADMIN).
+ * Depends on: LabelService.
+ */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
@@ -6,6 +16,7 @@ import { StatusBadgeComponent } from '../../../shared/components/status-badge/st
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { Label } from '../../../shared/models/models';
 
+/** Tab identifiers mapping to the label status values used as API filter params. */
 type LabelTab = 'SUBMITTED' | 'IN_REVIEW' | 'APPROVED' | 'CHANGES_REQUIRED' | 'all';
 
 @Component({
@@ -17,6 +28,7 @@ type LabelTab = 'SUBMITTED' | 'IN_REVIEW' | 'APPROVED' | 'CHANGES_REQUIRED' | 'a
 })
 export class AdminLabelsComponent implements OnInit {
   labels: Label[] = [];
+  /** Currently active status filter tab. */
   activeTab: LabelTab = 'SUBMITTED';
   isLoading = true;
 
@@ -34,9 +46,10 @@ export class AdminLabelsComponent implements OnInit {
     this.loadLabels();
   }
 
+  /** Fetches labels filtered by the active tab's status; clears the list before each load. */
   loadLabels() {
     this.isLoading = true;
-    this.labels = [];
+    this.labels    = [];
     this.labelService.getAllLabels(this.activeTab).subscribe({
       next: (res: any) => {
         this.labels    = res.results ?? res;
@@ -46,6 +59,7 @@ export class AdminLabelsComponent implements OnInit {
     });
   }
 
+  /** Switches to the given tab and reloads the label list with the new filter. */
   setTab(tab: LabelTab) {
     if (this.activeTab === tab) return;
     this.activeTab = tab;

@@ -1,3 +1,16 @@
+/**
+ * ConsultationsComponent
+ *
+ * Allows clients to request expert consultations and view their consultation
+ * history. Toggles between a list view and a new-consultation form without
+ * a full route change.
+ *
+ * On successful creation, the new consultation is prepended to the list and
+ * a timed success message is shown before auto-clearing after 4 seconds.
+ *
+ * Route: /consultations — protected by authGuard.
+ * Depends on: ConsultationService.
+ */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -6,6 +19,7 @@ import { PrimaryButtonComponent } from '../../../shared/components/primary-butto
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { Consultation } from '../../../shared/models/models';
 
+/** Controls which panel is visible: the consultation list or the creation form. */
 type ConsView = 'list' | 'new';
 
 @Component({
@@ -16,11 +30,15 @@ type ConsView = 'list' | 'new';
   styleUrls: ['./consultations.component.css']
 })
 export class ConsultationsComponent implements OnInit {
+  /** Currently active view panel. */
   view: ConsView = 'list';
   consultations: Consultation[] = [];
+  /** True while the initial list load is in flight. */
   isLoading  = true;
+  /** True while the create consultation POST is in flight. */
   isCreating = false;
   errorMessage   = '';
+  /** Auto-clears after 4 seconds to avoid stale success state. */
   successMessage = '';
 
   form!: FormGroup;
@@ -70,6 +88,7 @@ export class ConsultationsComponent implements OnInit {
     });
   }
 
+  /** Maps backend status codes to human-readable Spanish labels for display in the list. */
   getStatusLabel(status: string): string {
     const map: Record<string, string> = {
       REQUESTED:       'Solicitada',

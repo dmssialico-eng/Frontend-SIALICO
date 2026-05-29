@@ -1,3 +1,21 @@
+/**
+ * app.routes.ts
+ *
+ * Defines the three top-level route groups for the SIALICO application:
+ *
+ * 1. Public routes (/login, /register, /verify-email, /onboarding)
+ *    Protected by guestGuard (redirects authenticated users to their dashboard)
+ *    or authGuard (/onboarding requires login).
+ *
+ * 2. Client layout routes (nested under DashboardLayout)
+ *    Protected by authGuard. Available to CLIENT and CONSULTANT users.
+ *
+ * 3. Admin layout routes (/admin/*)
+ *    Protected by authGuard + roleGuard(ADMIN). Only accessible to ADMIN users.
+ *
+ * All components use lazy-loaded standalone components (loadComponent) to
+ * keep the initial bundle small.
+ */
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 import { guestGuard } from './core/guards/guest.guard';
@@ -5,8 +23,10 @@ import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
 
+  // Redirect bare root to /login for unauthenticated entry.
   { path: '', redirectTo: 'login', pathMatch: 'full' },
 
+  // ── Public routes (guestGuard redirects logged-in users away) ────────────
   {
     path: 'login',
     canActivate: [guestGuard],
@@ -23,12 +43,13 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/verify-email/verify-email.component').then(m => m.VerifyEmailComponent)
   },
   {
+    // Onboarding is post-registration; requires a valid session but no layout shell.
     path: 'onboarding',
     canActivate: [authGuard],
     loadComponent: () => import('./features/client/onboarding/onboarding.component').then(m => m.OnboardingComponent)
   },
 
-  // ── Layout cliente ────────────────────────────────────────────────────────
+  // ── Client layout (DashboardLayout wraps sidebar + top bar) ─────────────
   {
     path: '',
     canActivate: [authGuard],
@@ -45,18 +66,18 @@ export const routes: Routes = [
       { path: 'profile',        loadComponent: () => import('./features/client/profile/profile.component').then(m => m.ProfileComponent) },
       { path: 'consultations',  loadComponent: () => import('./features/client/consultations/consultations.component').then(m => m.ConsultationsComponent) },
 
-      // Proyectos
+      // Project routes
       { path: 'projects',      loadComponent: () => import('./features/client/projects/project-list/project-list.component').then(m => m.ProjectListComponent) },
       { path: 'projects/new',  loadComponent: () => import('./features/client/projects/project-create/project-create.component').then(m => m.ProjectCreateComponent) },
       { path: 'projects/:id',  loadComponent: () => import('./features/client/projects/project-detail/project-detail.component').then(m => m.ProjectDetailComponent) },
 
-      // Productos (anidados en proyecto)
+      // Product detail nested under its parent project
       {
         path: 'projects/:id/products/:productId',
         loadComponent: () => import('./features/client/products/product-detail/product-detail.component').then(m => m.ProductDetailComponent)
       },
 
-      // Etiquetas
+      // Label upload and label detail, nested under product
       {
         path: 'projects/:id/products/:productId/labels/new',
         loadComponent: () => import('./features/client/labels/label-upload/label-upload.component').then(m => m.LabelUploadComponent)
@@ -68,7 +89,7 @@ export const routes: Routes = [
     ]
   },
 
-  // ── Layout administrador ─────────────────────────────────────────────────
+  // ── Admin layout (requires ADMIN role, enforced by roleGuard) ────────────
   {
     path: 'admin',
     canActivate: [authGuard, roleGuard],
@@ -112,6 +133,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Fallback
+  // Wildcard fallback — unrecognized paths land on the dashboard.
   { path: '**', redirectTo: 'dashboard' }
 ];

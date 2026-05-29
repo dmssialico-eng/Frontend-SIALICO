@@ -1,3 +1,16 @@
+/**
+ * ProductDetailComponent
+ *
+ * Displays a single product and all labels (regulatory submissions) that have
+ * been created for it. Product and labels are loaded in parallel via forkJoin.
+ *
+ * Both `id` (projectId) and `productId` are read from the route params:
+ * projectId is only needed to construct back-navigation and upload routes
+ * since the product/label APIs are keyed on productId alone.
+ *
+ * Route: /projects/:id/products/:productId — protected by authGuard.
+ * Depends on: ProductService, LabelService.
+ */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -23,10 +36,15 @@ import { Product, Label } from '../../../../shared/models/models';
   styleUrls: ['./product-detail.component.css']
 })
 export class ProductDetailComponent implements OnInit {
+  /** The loaded product; null until forkJoin resolves. */
   product:   Product | null = null;
+  /** All labels created for this product, ordered as returned by the API. */
   labels:    Label[]        = [];
+  /** Parent project ID extracted from the route; used for back/upload links only. */
   projectId: number | null  = null;
+  /** True while the parallel product+label fetch is in flight. */
   isLoading  = true;
+  /** True when either forkJoin call fails. */
   loadError  = false;
 
   constructor(
@@ -62,6 +80,7 @@ export class ProductDetailComponent implements OnInit {
     });
   }
 
+  /** Constructs the route to the label upload page for this product. */
   get uploadRoute(): string {
     return `/projects/${this.projectId}/products/${this.product?.id}/labels/new`;
   }

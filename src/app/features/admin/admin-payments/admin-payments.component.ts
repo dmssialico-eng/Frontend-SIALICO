@@ -1,9 +1,26 @@
+/**
+ * AdminPaymentsComponent
+ *
+ * Admin view for reviewing and actioning pending payments. Payments are
+ * re-fetched from the API on every tab switch so the list always reflects
+ * the current database state (unlike the ticket list which filters client-side).
+ *
+ * `actioningId` ensures only one payment can be confirmed/rejected at a time,
+ * preventing duplicate API calls if the admin clicks quickly.
+ *
+ * After confirming or rejecting, `updateLocal()` removes the payment from the
+ * filtered list if the active tab no longer matches the payment's new status.
+ *
+ * Route: /admin/payments — protected by authGuard + roleGuard (ADMIN).
+ * Depends on: AdminService.
+ */
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AdminService } from '../../../core/services/admin.service';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { Payment } from '../../../shared/models/models';
 
+/** Tab identifiers corresponding to the payment status values used as API filter params. */
 type PaymentTab = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'ALL';
 
 @Component({
@@ -15,12 +32,16 @@ type PaymentTab = 'PENDING' | 'CONFIRMED' | 'REJECTED' | 'ALL';
 })
 export class AdminPaymentsComponent implements OnInit {
   payments: Payment[] = [];
-  isLoading     = true;
+  isLoading      = true;
+  /** Currently selected status tab; drives the API filter on load. */
   activeTab: PaymentTab = 'PENDING';
+  /** ID of the payment currently being confirmed or rejected; null when idle. */
   actioningId:  number | null = null;
   errorMessage  = '';
+  /** Auto-clears after 4 seconds. */
   successMessage = '';
-  lastActionPayment: Payment | null = null; // para mostrar en el toast qué pago se procesó
+  /** The payment that was most recently actioned; used to customize the toast message. */
+  lastActionPayment: Payment | null = null;
 
   readonly tabs: { key: PaymentTab; label: string }[] = [
     { key: 'PENDING',   label: 'Pendientes'  },
@@ -101,6 +122,11 @@ export class AdminPaymentsComponent implements OnInit {
     setTimeout(() => { this.successMessage = ''; }, 4000);
   }
 
+  /**
+   * Replaces the payment in the local list with the updated record, then removes it
+   * from the view when the active tab filters by status (so a confirmed payment
+   * disappears from the PENDING tab immediately without a reload).
+   */
   private updateLocal(updated: Payment) {
     const idx = this.payments.findIndex(p => p.id === updated.id);
     if (idx !== -1) this.payments[idx] = updated;
@@ -109,6 +135,7 @@ export class AdminPaymentsComponent implements OnInit {
     }
   }
 
+  /** Formats a numeric amount as a localized currency string (defaults to MXN). */
   formatCurrency(amount: string | number, currency = 'MXN'): string {
     return new Intl.NumberFormat('es-MX', { style: 'currency', currency }).format(Number(amount));
   }
